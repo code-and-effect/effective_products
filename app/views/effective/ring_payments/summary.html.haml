@@ -1,0 +1,8 @@
+= render 'layout' do
+  = render 'effective/ring_payments/content', resource: resource
+
+  = render 'effective/ring_payments/ring_payment', ring_payment: resource
+
+  = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
+    = f.hidden_field :id
+    = f.submit 'Save and Continue', class: 'btn btn-primary'

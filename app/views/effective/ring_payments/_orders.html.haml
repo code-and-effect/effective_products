@@ -1,0 +1,4 @@
+- if ring_payment.submit_order&.purchased?
+  .card.mb-4
+    .card-body
+      = render(ring_payment.submit_order)
