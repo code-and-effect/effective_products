@@ -1,0 +1,39 @@
+%h2 Contact Information
+
+= f.text_field :first_name
+= f.text_field :last_name
+= f.email_field :email
+= f.phone_field :phone
+= f.static_field :member_number, value: f.object.owner&.membership&.number || 'None'
+
+= effective_address_fields(f, :shipping)
+
+%h2 Ring Information
+
+%table.table
+  %thead
+    %th Ring Size
+    %th Composition
+    %th.order_price Cost
+  %tbody
+    %tr
+      %td 3-8
+      %td 14k Yellow Gold
+      %td.order_price $425.00 + GST
+    %tr
+      %td 3-8
+      %td Sterling Silver
+      %td.order_price $175.00 + GST
+    %tr
+      %td 3-13
+      %td Titanium
+      %td.order_price $50.00 + GST
+
+%ul
+  %li 14k Yellow Gold and Sterling Silver rings are available in sizes 3 - 8.
+  %li Titanium rings are available in sizes 3 - 13.
+
+%p Please select a ring metal and size:
+
+= f.select :metal, Effective::Ring::METALS
+= f.select :size, Effective::Ring::TITANIUM_SIZES
