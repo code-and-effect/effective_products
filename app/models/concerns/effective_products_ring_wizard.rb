@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-# EffectiveProductsRingPayment
+# EffectiveProductsRingWizard
 #
-# Mark your owner model with effective_products_ring_payment to get all the includes
+# Mark your owner model with effective_products_ring_wizard to get all the includes
 
-module EffectiveProductsRingPayment
+module EffectiveProductsRingWizard
   extend ActiveSupport::Concern
 
   module Base
-    def effective_products_ring_payment
-      include ::EffectiveProductsRingPayment
+    def effective_products_ring_wizard
+      include ::EffectiveProductsRingWizard
     end
   end
 
   module ClassMethods
-    def effective_products_ring_payment?; true; end
+    def effective_products_ring_wizard?; true; end
 
     def all_wizard_steps
       const_get(:WIZARD_STEPS).keys
@@ -52,7 +52,7 @@ module EffectiveProductsRingPayment
     accepts_nested_attributes_for :owner
 
     # Effective Namespace
-    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', inverse_of: :ring_payment, dependent: :destroy
+    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', inverse_of: :ring_wizard, dependent: :destroy
     accepts_nested_attributes_for :rings, reject_if: :all_blank, allow_destroy: true
 
     has_many :orders, -> { order(:id) }, as: :parent, class_name: 'Effective::Order', dependent: :nullify

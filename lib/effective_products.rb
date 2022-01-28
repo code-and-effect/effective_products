@@ -7,7 +7,7 @@ module EffectiveProducts
 
   def self.config_keys
     [
-      :rings_table_name, :ring_payments_table_name, :ring_payment_class_name,
+      :rings_table_name, :ring_wizards_table_name, :ring_wizard_class_name,
       :stamps_table_name, :stamp_payments_table_name, :stamp_payment_class_name,
       :layout, :use_effective_roles
     ]
@@ -15,8 +15,8 @@ module EffectiveProducts
 
   include EffectiveGem
 
-  def self.RingPayment
-    ring_payment_class_name&.constantize || Effective::RingPayment
+  def self.RingWizard
+    ring_wizard_class_name&.constantize || Effective::RingWizard
   end
 
   def self.StampPayment

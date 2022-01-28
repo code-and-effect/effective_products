@@ -1,0 +1,8 @@
+.effective-ring-payment
+  - blacklist = ring_wizard.class.required_wizard_steps + [:summary]
+  - steps = ring_wizard.required_steps - blacklist
+
+  = render "effective/ring_wizards/summary", ring_wizard: ring_wizard
+
+  - steps.select { |step| ring_wizard.has_completed_step?(step) }.each do |partial|
+    = render "effective/ring_wizards/#{partial}", ring_wizard: ring_wizard, step: partial

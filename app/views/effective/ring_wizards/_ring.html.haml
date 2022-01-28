@@ -1,5 +1,5 @@
 = card('Ring') do
-  - ring = ring_payment.ring
+  - ring = ring_wizard.ring
 
   %table.table.table-sm
     %tbody
@@ -18,7 +18,7 @@
 
       %tr
         %th Member Number
-        %td= ring_payment.owner.membership&.number || 'None'
+        %td= ring_wizard.owner.membership&.number || 'None'
 
       %tr
         %th Metal

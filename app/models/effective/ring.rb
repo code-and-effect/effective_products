@@ -14,8 +14,8 @@ module Effective
     # This ring is charged to an owner
     belongs_to :owner, polymorphic: true
 
-    # Through the ring_payment
-    belongs_to :ring_payment, polymorphic: true, optional: true
+    # Through the ring_wizard
+    belongs_to :ring_wizard, polymorphic: true, optional: true
 
     effective_resource do
       first_name        :string
@@ -65,7 +65,7 @@ module Effective
 
     # This is the Admin Save and Mark Paid action
     def mark_paid!
-      raise('expected a blank ring payment') if ring_payment.present?
+      raise('expected a blank ring payment') if ring_wizard.present?
 
       save!
 

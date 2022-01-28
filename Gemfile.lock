@@ -1,9 +1,10 @@
 PATH
   remote: .
   specs:
-    effective_products (0.0.1)
+    effective_products (0.0.2)
       effective_bootstrap
       effective_datatables (>= 4.0.0)
+      effective_developer
       effective_orders
       effective_resources
       effective_roles
@@ -314,9 +315,9 @@ PLATFORMS
 
 DEPENDENCIES
   devise
-  effective_products!
   effective_developer
   effective_email_templates
+  effective_products!
   effective_test_bot
   haml-rails
   pry-byebug

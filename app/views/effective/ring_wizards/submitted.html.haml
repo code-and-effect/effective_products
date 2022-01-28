@@ -1,5 +1,5 @@
 = render 'layout' do
-  = render 'effective/ring_payments/content', resource: resource
+  = render 'effective/ring_wizards/content', resource: resource
 
   - raise('expected a submitted resource') unless resource.was_submitted?
   - raise('expected a purchased resource submit_order') unless resource.submit_order&.purchased?
@@ -9,7 +9,7 @@
 
   = link_to "Return to Dashboard", root_path, class: 'btn btn-lg btn-primary mb-4'
 
-  = render 'effective/ring_payments/ring_payment', ring_payment: resource
-  = render 'effective/ring_payments/orders', ring_payment: resource
+  = render 'effective/ring_wizards/ring_wizard', ring_wizard: resource
+  = render 'effective/ring_wizards/orders', ring_wizard: resource
 
   = link_to 'Return to Dashboard', root_path, class: 'btn btn-lg btn-primary'

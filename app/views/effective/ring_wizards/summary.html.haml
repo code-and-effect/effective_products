@@ -1,7 +1,7 @@
 = render 'layout' do
-  = render 'effective/ring_payments/content', resource: resource
+  = render 'effective/ring_wizards/content', resource: resource
 
-  = render 'effective/ring_payments/ring_payment', ring_payment: resource
+  = render 'effective/ring_wizards/ring_wizard', ring_wizard: resource
 
   = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
     = f.hidden_field :id

@@ -1,5 +1,5 @@
 = card('Ring Payment') do
-  - ring = ring_payment.ring
+  - ring = ring_wizard.ring
 
   %table.table.table-sm
     %tbody
@@ -7,24 +7,24 @@
         %tr
           %th Ordered by
           %td
-            - url = (polymorphic_admin_path(ring_payment.owner) rescue "/admin/users/#{ring_payment.owner.to_param}/edit")
-            = link_to(ring_payment.owner, url)
+            - url = (polymorphic_admin_path(ring_wizard.owner) rescue "/admin/users/#{ring_wizard.owner.to_param}/edit")
+            = link_to(ring_wizard.owner, url)
       - else
         %tr
           %th Ordered by
-          %td= ring_payment.owner
+          %td= ring_wizard.owner
 
-      - if ring_payment.orders.present?
+      - if ring_wizard.orders.present?
         %tr
           %th Order
           %td
-            - ring_payment.orders.each do |order|
+            - ring_wizard.orders.each do |order|
               = link_to(order, effective_orders.order_path(order))
 
-      - if ring_payment.was_submitted?
+      - if ring_wizard.was_submitted?
         %tr
           %th Submitted
-          %td= ring_payment.submitted_at.strftime('%F')
+          %td= ring_wizard.submitted_at.strftime('%F')
 
         %tr
           %th Issued
