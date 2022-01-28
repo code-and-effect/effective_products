@@ -4,7 +4,6 @@ PATH
     effective_products (0.0.2)
       effective_bootstrap
       effective_datatables (>= 4.0.0)
-      effective_developer
       effective_orders
       effective_resources
       effective_roles

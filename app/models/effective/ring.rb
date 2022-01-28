@@ -18,11 +18,6 @@ module Effective
     belongs_to :ring_wizard, polymorphic: true, optional: true
 
     effective_resource do
-      first_name        :string
-      last_name         :string
-      phone             :string
-      email             :string
-
       size               :integer
       metal              :string
 
@@ -39,11 +34,6 @@ module Effective
     scope :deep, -> { includes(:owner) }
     scope :ready_to_issue, -> { purchased.where(issued_at: nil) }
     scope :issued, -> { where.not(issued_at: nil) }
-
-    validates :first_name, presence: true
-    validates :last_name, presence: true
-    validates :phone, presence: true
-    validates :email, presence: true, email: true
 
     validates :metal, presence: true, inclusion: { in: METALS }
 

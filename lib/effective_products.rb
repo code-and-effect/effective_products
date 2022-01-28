@@ -8,7 +8,7 @@ module EffectiveProducts
   def self.config_keys
     [
       :rings_table_name, :ring_wizards_table_name, :ring_wizard_class_name,
-      :stamps_table_name, :stamp_payments_table_name, :stamp_payment_class_name,
+      :stamps_table_name, :stamp_wizards_table_name, :stamp_wizard_class_name,
       :layout, :use_effective_roles
     ]
   end
@@ -19,8 +19,8 @@ module EffectiveProducts
     ring_wizard_class_name&.constantize || Effective::RingWizard
   end
 
-  def self.StampPayment
-    stamp_payment_class_name&.constantize || Effective::StampPayment
+  def self.StampWizard
+    stamp_wizard_class_name&.constantize || Effective::StampWizard
   end
 
 end

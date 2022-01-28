@@ -5,13 +5,13 @@
     %tbody
       - if request.path.start_with?('/admin')
         %tr
-          %th Ordered by
+          %th Owner
           %td
             - url = (polymorphic_admin_path(ring_wizard.owner) rescue "/admin/users/#{ring_wizard.owner.to_param}/edit")
             = link_to(ring_wizard.owner, url)
       - else
         %tr
-          %th Ordered by
+          %th Owner
           %td= ring_wizard.owner
 
       - if ring_wizard.orders.present?

@@ -16,11 +16,10 @@ module Admin
       col :created_at, as: :date
       col :owner, search: :string
 
-      col :first_name
-      col :last_name
-
-      col :email
-      col :phone
+      col(:first_name) { |ring| ring.owner.first_name }
+      col(:last_name) { |ring| ring.owner.last_name }
+      col(:email) { |ring| ring.owner.email }
+      col(:phone) { |ring| ring.owner.phone }
 
       col :member_number, label: 'Member #' do |ring|
         ring.owner.try(:membership).try(:number)

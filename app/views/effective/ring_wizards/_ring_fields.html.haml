@@ -1,4 +1,57 @@
-= f.text_field :first_name
-= f.text_field :last_name
-= f.email_field :email
-= f.phone_field :phone
+
+%h2 Member Information
+
+- owner = f.object.owner
+
+%p
+  = owner.to_s
+
+  - if owner.try(:email).present?
+    %br
+    = mail_to(owner.email)
+
+  - if owner.try(:phone).present?
+    %br
+    = owner.phone
+
+  - if owner.try(:membership).try(:number).present?
+    %br
+    Member Number #{owner.membership.number}
+
+%h2 Ring Information
+%p
+  The 14k Yellow Gold and Sterling Silver rings will have the association's letters as well as your membership number engraved inside the band.
+  Titanium rings do not come engraved.
+
+%p Please choose your desired metal and ring size:
+
+%table.table
+  %thead
+    %th Ring Size
+    %th Composition
+    %th.order_price Cost
+  %tbody
+    %tr
+      %td 3-8
+      %td 14k Yellow Gold
+      %td.order_price $425.00 + GST
+    %tr
+      %td 3-8
+      %td Sterling Silver
+      %td.order_price $175.00 + GST
+    %tr
+      %td 3-13
+      %td Titanium
+      %td.order_price $50.00 + GST
+
+%ul
+  %li 14k Yellow Gold and Sterling Silver rings are available in sizes 3 - 8.
+  %li Titanium rings are available in sizes 3 - 13.
+
+%p Please select a ring metal and size:
+
+= f.select :metal, Effective::Ring::METALS
+= f.select :size, Effective::Ring::TITANIUM_SIZES
+
+%h2 Shipping Information
+= effective_address_fields(f, :shipping)

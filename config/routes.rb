@@ -7,7 +7,7 @@ end
 EffectiveProducts::Engine.routes.draw do
   # Public routes
   scope module: 'effective' do
-    resources :ring_wizards, only: [:new, :show, :destroy] do
+    resources :ring_wizards, name: :ring_wizard, only: [:new, :show, :destroy] do
       resources :build, controller: :ring_wizards, only: [:show, :update]
     end
   end

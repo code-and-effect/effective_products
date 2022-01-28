@@ -11,30 +11,38 @@
       %td
         - if ring.purchased_order.present?
           = link_to(ring.purchased_order, effective_orders.admin_order_path(ring.purchased_order))
+
     %tr
-      %th First Name
-      %td= ring.first_name
-    %tr
-      %th Last Name
-      %td= ring.last_name
-    %tr
-      %th Phone
-      %td= ring.phone
-    %tr
-      %th Email
-      %td= ring.email
-    %tr
-      %th Member Number
-      %td= ring.owner.try(:membership).try(:number) || '-'
+      %th Contact
+      %td
+        - owner = ring.owner
+
+        = owner.to_s
+
+        - if owner.try(:email).present?
+          %br
+          = mail_to(owner.email)
+
+        - if owner.try(:phone).present?
+          %br
+          = owner.phone
+
+        - if owner.try(:membership).try(:number).present?
+          %br
+          Member Number #{owner.membership.number}
+
     %tr
       %th Address
       %td= ring.shipping_address.to_html
+
     %tr
       %th Size
       %td= ring.size
+
     %tr
       %th Metal
       %td= ring.metal
+
     %tr
       %th Issued At
-      %td= ring.issued_at
+      %td= ring.issued_at&.strftime('%F') || 'Not Issued'

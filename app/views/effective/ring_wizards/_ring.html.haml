@@ -1,24 +1,28 @@
 = card('Ring') do
   - ring = ring_wizard.ring
+  - owner = ring_wizard.owner
 
   %table.table.table-sm
     %tbody
       %tr
-        %th Contact Info
+        %th Owner
         %td
-          #{ring.first_name} #{ring.last_name}
-          %br
-          = mail_to(ring.email)
-          %br
-          = ring.phone
+          = owner.to_s
+          - if owner.try(:email).present?
+            %br
+            = mail_to(owner.email)
+
+          - if owner.try(:phone).present?
+            %br
+            = owner.phone
+
+          - if owner.try(:membership).try(:number).present?
+            %br
+            Member Number #{owner.membership.number}
 
       %tr
         %th Address
         %td= ring.shipping_address.to_html
-
-      %tr
-        %th Member Number
-        %td= ring_wizard.owner.membership&.number || 'None'
 
       %tr
         %th Metal
