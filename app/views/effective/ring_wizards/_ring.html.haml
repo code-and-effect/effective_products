@@ -1,33 +1,40 @@
-= card('Ring') do
-  - ring = ring_wizard.ring
-  - owner = ring_wizard.owner
+.card
+  .card-body
+    .row
+      .col-sm
+        %h5.card-title= ring_wizard.wizard_step_title(:ring)
+      .col-sm-auto.text-right
+        = link_to('Edit', wizard_path(:ring)) if edit_effective_wizard?
 
-  %table.table.table-sm
-    %tbody
-      %tr
-        %th Owner
-        %td
-          = owner.to_s
-          - if owner.try(:email).present?
-            %br
-            = mail_to(owner.email)
+    - ring = ring_wizard.ring
+    - owner = ring_wizard.owner
 
-          - if owner.try(:phone).present?
-            %br
-            = owner.phone
+    %table.table.table-sm
+      %tbody
+        %tr
+          %th Owner
+          %td
+            = owner.to_s
+            - if owner.try(:email).present?
+              %br
+              = mail_to(owner.email)
 
-          - if owner.try(:membership).try(:number).present?
-            %br
-            Member Number #{owner.membership.number}
+            - if owner.try(:phone).present?
+              %br
+              = owner.phone
 
-      %tr
-        %th Address
-        %td= ring.shipping_address.to_html
+            - if owner.try(:membership).try(:number).present?
+              %br
+              Member Number #{owner.membership.number}
 
-      %tr
-        %th Metal
-        %td= ring.metal
+        %tr
+          %th Address
+          %td= ring.shipping_address.to_html
 
-      %tr
-        %th Size
-        %td Size #{ring.size}
+        %tr
+          %th Metal
+          %td= ring.metal
+
+        %tr
+          %th Size
+          %td Size #{ring.size}

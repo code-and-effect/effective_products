@@ -9,6 +9,7 @@
 
   = link_to "Return to Dashboard", root_path, class: 'btn btn-lg btn-primary mb-4'
 
+  = render 'effective/ring_wizards/summary', ring_wizard: resource
   = render 'effective/ring_wizards/ring_wizard', ring_wizard: resource
   = render 'effective/ring_wizards/orders', ring_wizard: resource
 

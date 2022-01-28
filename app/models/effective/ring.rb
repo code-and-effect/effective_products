@@ -53,17 +53,5 @@ module Effective
       issued_at.present?
     end
 
-    # This is the Admin Save and Mark Paid action
-    def mark_paid!
-      raise('expected a blank ring payment') if ring_wizard.present?
-
-      save!
-
-      order = Effective::Order.new(items: self, user: owner)
-      order.purchase!(skip_buyer_validations: true, email: false)
-
-      true
-    end
-
   end
 end

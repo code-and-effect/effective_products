@@ -15,14 +15,6 @@ module EffectiveProductsRingWizard
 
   module ClassMethods
     def effective_products_ring_wizard?; true; end
-
-    def all_wizard_steps
-      const_get(:WIZARD_STEPS).keys
-    end
-
-    def required_wizard_steps
-      [:start, :billing, :checkout, :submitted]
-    end
   end
 
   included do
@@ -117,14 +109,7 @@ module EffectiveProductsRingWizard
   end
 
   def build_ring
-    ring = rings.build(
-      owner: owner,
-      first_name: owner.try(:first_name),
-      last_name: owner.try(:last_name),
-      email: owner.try(:email),
-      phone: owner.try(:phone)
-    )
-
+    ring = rings.build(owner: owner)
     address = owner.try(:shipping_address) || owner.try(:billing_address)
 
     if address.present?
