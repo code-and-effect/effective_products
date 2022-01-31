@@ -1,0 +1,8 @@
+= render 'layout' do
+  = render 'effective/stamp_wizards/content', resource: resource
+
+  = render 'effective/stamp_wizards/stamp_wizard', stamp_wizard: resource
+
+  = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
+    = f.hidden_field :id
+    = f.submit 'Save and Continue', class: 'btn btn-primary'

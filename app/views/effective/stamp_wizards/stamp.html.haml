@@ -1,0 +1,18 @@
+= render 'layout' do
+  = render 'effective/stamp_wizards/content', resource: resource
+
+  .card
+    .card-body
+      = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
+        = f.hidden_field :id
+
+        = f.fields_for :stamps, (f.object.stamp || f.object.build_stamp) do |fr|
+          = fr.hidden_field :stamp_wizard_id
+          = fr.hidden_field :stamp_wizard_type
+
+          = fr.hidden_field :owner_id
+          = fr.hidden_field :owner_type
+
+          = render('effective/stamp_wizards/stamp_fields', f: fr)
+
+        = f.save 'Save and Continue'

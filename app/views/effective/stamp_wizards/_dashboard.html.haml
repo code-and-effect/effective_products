@@ -1,0 +1,27 @@
+-# In progress payments
+- existing = EffectiveProducts.StampWizard.in_progress.for(current_user).first
+- datatable = EffectiveResources.best('EffectiveStampWizardsDatatable').new(self, namespace: :effective)
+
+- if existing.present?
+  %h2 In Progress Stamp Payments
+
+  %p Your payment for Professional Stamp is incomplete
+
+  %p
+    Please
+    = link_to("Continue payment for #{existing}", effective_products.stamp_wizard_build_path(existing, existing.next_step), 'data-turbolinks' => false, class: 'btn btn-primary')
+    or you can
+    = link_to('Abandon payment', effective_products.stamp_wizard_path(existing), 'data-confirm': "Really delete #{existing}?", 'data-method': :delete, class: 'btn btn-danger')
+    to start over.
+
+  %hr
+
+%h2 Stamp Payments
+
+- if datatable.present?
+  = render_simple_datatable(datatable)
+- else
+  %p You have no past stamp payments. When you do, we'll show them here.
+
+- if existing.blank?
+  %p= link_to 'Order a Professional Stamp', effective_products.new_stamp_wizard_path, class: 'btn btn-primary'

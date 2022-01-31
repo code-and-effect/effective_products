@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-# EffectiveProductsRingWizard
+# EffectiveProductsStampWizard
 #
-# Mark your owner model with effective_products_ring_wizard to get all the includes
+# Mark your owner model with effective_products_stamp_wizard to get all the includes
 
-module EffectiveProductsRingWizard
+module EffectiveProductsStampWizard
   extend ActiveSupport::Concern
 
   module Base
-    def effective_products_ring_wizard
-      include ::EffectiveProductsRingWizard
+    def effective_products_stamp_wizard
+      include ::EffectiveProductsStampWizard
     end
   end
 
   module ClassMethods
-    def effective_products_ring_wizard?; true; end
+    def effective_products_stamp_wizard?; true; end
   end
 
   included do
@@ -28,7 +28,7 @@ module EffectiveProductsRingWizard
 
     acts_as_wizard(
       start: 'Start',
-      ring: 'Select Ring',
+      stamp: 'Select Stamp',
       summary: 'Review',
       billing: 'Billing Address',
       checkout: 'Checkout',
@@ -44,8 +44,8 @@ module EffectiveProductsRingWizard
     accepts_nested_attributes_for :owner
 
     # Effective Namespace
-    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', inverse_of: :ring_wizard, dependent: :destroy
-    accepts_nested_attributes_for :rings, reject_if: :all_blank, allow_destroy: true
+    has_many :stamps, -> { order(:id) }, class_name: 'Effective::Stamp', inverse_of: :stamp_wizard, dependent: :destroy
+    accepts_nested_attributes_for :stamps, reject_if: :all_blank, allow_destroy: true
 
     has_many :orders, -> { order(:id) }, as: :parent, class_name: 'Effective::Order', dependent: :nullify
     accepts_nested_attributes_for :orders
@@ -64,7 +64,7 @@ module EffectiveProductsRingWizard
       timestamps
     end
 
-    scope :deep, -> { includes(:owner, :orders, :rings) }
+    scope :deep, -> { includes(:owner, :orders, :stamps) }
     scope :sorted, -> { order(:id) }
 
     scope :in_progress, -> { where.not(status: [:submitted]) }
@@ -75,14 +75,14 @@ module EffectiveProductsRingWizard
     # All Steps validations
     validates :owner, presence: true
 
-    # Ring Step
-    validate(if: -> { current_step == :ring }) do
-      self.errors.add(:rings, "can't be blank") unless present_rings.present?
+    # Stamp Step
+    validate(if: -> { current_step == :stamp }) do
+      self.errors.add(:stamps, "can't be blank") unless present_stamps.present?
     end
 
     # All Fees and Orders
     def submit_fees
-      rings
+      stamps
     end
 
     def after_submit_purchased!
@@ -93,7 +93,7 @@ module EffectiveProductsRingWizard
 
   # Instance Methods
   def to_s
-    'ring payment'
+    'stamp payment'
   end
 
   def in_progress?
@@ -104,52 +104,36 @@ module EffectiveProductsRingWizard
     submitted?
   end
 
-  def ring
-    rings.first
+  def stamp
+    stamps.first
   end
 
-  def build_ring
-    ring = rings.build(owner: owner)
+  def build_stamp
     address = owner.try(:shipping_address) || owner.try(:billing_address)
-
-    if address.present?
-      ring.shipping_address = address
-    end
-
-    ring
+    stamps.build(owner: owner, shipping_address: address)
   end
 
   def assign_pricing
     raise('to be implemented by including class')
 
-    # raise('expected a persisted ring') unless ring&.persisted?
-
-    # price = case ring.metal
-    #   when '14k Yellow Gold' then 450_00
-    #   when 'Sterling Silver' then 175_00
-    #   when 'Titanium' then 50_00
-    #   else
-    #     raise "unexpected ring metal: #{ring.metal || 'none'}"
-    #   end
-
-    # qb_item_name = "Professional Ring"
+    # price = (stamp.physical? ? 100_00 : 50_00)
+    # qb_item_name = "Professional Stamp"
     # tax_exempt = false
 
-    # ring.assign_attributes(price: price, qb_item_name: qb_item_name, tax_exempt: tax_exempt)
+    # stamp.assign_attributes(price: price, qb_item_name: qb_item_name, tax_exempt: tax_exempt)
   end
 
-  # After the configure Ring step
-  def ring!
-    assign_pricing() if ring.present?
-    raise('expected ring to have a price') if ring.price.blank?
-
+  # After the configure Stamp step
+  def stamp!
+    assign_pricing() if stamp.present?
+    raise('expected stamp to have a price') if stamp.price.blank?
     save!
   end
 
   private
 
-  def present_rings
-    rings.reject(&:marked_for_destruction?)
+  def present_stamps
+    stamps.reject(&:marked_for_destruction?)
   end
 
 end

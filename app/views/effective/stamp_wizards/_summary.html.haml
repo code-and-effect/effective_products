@@ -1,0 +1,31 @@
+= card('Stamp Payment') do
+  - stamp = stamp_wizard.stamp
+
+  %table.table.table-sm
+    %tbody
+      - if request.path.start_with?('/admin')
+        %tr
+          %th Owner
+          %td
+            - url = (polymorphic_admin_path(stamp_wizard.owner) rescue "/admin/users/#{stamp_wizard.owner.to_param}/edit")
+            = link_to(stamp_wizard.owner, url)
+      - else
+        %tr
+          %th Owner
+          %td= stamp_wizard.owner
+
+      - if stamp_wizard.orders.present?
+        %tr
+          %th Order
+          %td
+            - stamp_wizard.orders.each do |order|
+              = link_to(order, effective_orders.order_path(order))
+
+      - if stamp_wizard.was_submitted?
+        %tr
+          %th Submitted
+          %td= stamp_wizard.submitted_at.strftime('%F')
+
+        %tr
+          %th Issued
+          %td= stamp.issued_at&.strftime('%F') || 'Not Issued'

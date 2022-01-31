@@ -1,0 +1,3 @@
+.effective-stamp-payment
+  - stamp_wizard.render_steps.each do |partial|
+    = render "effective/stamp_wizards/#{partial}", stamp_wizard: stamp_wizard, step: partial

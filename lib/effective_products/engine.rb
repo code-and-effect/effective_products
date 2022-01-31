@@ -11,6 +11,7 @@ module EffectiveProducts
     initializer 'effective_products.active_record' do |app|
       ActiveSupport.on_load :active_record do
         ActiveRecord::Base.extend(EffectiveProductsRingWizard::Base)
+        ActiveRecord::Base.extend(EffectiveProductsStampWizard::Base)
       end
     end
 

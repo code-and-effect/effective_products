@@ -1,0 +1,53 @@
+%table.table
+  %tbody
+    %tr
+      %th Owner
+      %td
+        - url = (edit_polymorphic_path(stamp.owner) rescue "/admin/users/#{stamp.owner.to_param}/edit")
+        = link_to(stamp.owner, url)
+
+    %tr
+      %th Purchased Order
+      %td
+        - if stamp.purchased_order.present?
+          = link_to(stamp.purchased_order, effective_orders.admin_order_path(stamp.purchased_order))
+
+    %tr
+      %th Contact
+      %td
+        - owner = stamp.owner
+
+        = owner.to_s
+
+        - if owner.try(:email).present?
+          %br
+          = mail_to(owner.email)
+
+        - if owner.try(:phone).present?
+          %br
+          = owner.phone
+
+        - if owner.try(:membership).try(:number).present?
+          %br
+          Member Number #{owner.membership.number}
+
+    %tr
+      %th
+      %td= stamp.physical? ? 'Physical' : 'Digital Only'
+
+    - if stamp.shipping_address.present?
+      %tr
+        %th Address
+        %td= stamp.shipping_address.to_html
+
+    %tr
+      %th Name on Stamp
+      %td= stamp.name
+
+    %tr
+      %th Name Confirmation
+      %td= stamp.name_confirmation
+
+    %tr
+      %th Issued At
+      %td= stamp.issued_at&.strftime('%F') || 'Not Issued'

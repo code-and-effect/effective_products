@@ -1,0 +1,45 @@
+.card
+  .card-body
+    .row
+      .col-sm
+        %h5.card-title= stamp_wizard.wizard_step_title(:stamp)
+      .col-sm-auto.text-right
+        = link_to('Edit', wizard_path(:stamp)) if edit_effective_wizard?
+
+    - stamp = stamp_wizard.stamp
+    - owner = stamp_wizard.owner
+
+    %table.table.table-sm
+      %tbody
+        %tr
+          %th Owner
+          %td
+            = owner.to_s
+            - if owner.try(:email).present?
+              %br
+              = mail_to(owner.email)
+
+            - if owner.try(:phone).present?
+              %br
+              = owner.phone
+
+            - if owner.try(:membership).try(:number).present?
+              %br
+              Member Number #{owner.membership.number}
+
+        %tr
+          %th Category
+          %td= stamp.category
+
+        - if stamp.shipping_address.present?
+          %tr
+            %th Address
+            %td= stamp.shipping_address.to_html
+
+        %tr
+          %th Name
+          %td= stamp.name
+
+        %tr
+          %th Name Confirmation
+          %td= stamp.name_confirmation

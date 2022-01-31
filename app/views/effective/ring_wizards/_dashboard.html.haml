@@ -11,7 +11,7 @@
     Please
     = link_to("Continue payment for #{existing}", effective_products.ring_wizard_build_path(existing, existing.next_step), 'data-turbolinks' => false, class: 'btn btn-primary')
     or you can
-    = link_to('Abandon registration', effective_products.ring_wizard_path(existing), 'data-confirm': "Really delete #{existing}?", 'data-method': :delete, class: 'btn btn-danger')
+    = link_to('Abandon payment', effective_products.ring_wizard_path(existing), 'data-confirm': "Really delete #{existing}?", 'data-method': :delete, class: 'btn btn-danger')
     to start over.
 
   %hr
