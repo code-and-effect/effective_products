@@ -52,7 +52,7 @@ module Effective
     scope :with_stamp_wizards, -> { where(applicant_id: nil).where.not(stamp_wizard_id: nil) }
 
     scope :ready_to_issue, -> {
-      with_approved_applicants.or(with_stamp_wizards).purchased.where.not(issued_at: nil)
+      with_approved_applicants.or(with_stamp_wizards).purchased.where.not(status: :issued)
     }
 
     validates :category, presence: true, inclusion: { in: CATEGORIES }
@@ -69,10 +69,6 @@ module Effective
 
     def to_s
       ['Professional Stamp', *name.presence].join(' ')
-    end
-
-    def issued?
-      issued_at.present?
     end
 
     def mark_as_issued!
