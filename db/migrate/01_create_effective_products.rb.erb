@@ -55,6 +55,12 @@ class CreateEffectiveProducts < ActiveRecord::Migration[6.1]
       t.integer :stamp_wizard_id
       t.string :stamp_wizard_type
 
+      t.integer :applicant_id
+      t.string :applicant_type
+
+      t.string :status
+      t.text :status_steps
+
       t.string :category
       t.string :name
       t.string :name_confirmation

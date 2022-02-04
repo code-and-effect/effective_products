@@ -1,0 +1,12 @@
+= effective_form_with(model: [:admin, stamp], engine: true) do |f|
+  - if f.object.new_record?
+    = f.select :owner, { 'Users' => current_user.class.members.sorted }, polymorphic: true
+  - else
+    = f.static_field :owner
+
+  = render 'effective/stamps/fields', f: f, stamp: f.object
+
+  - if f.object.new_record?
+    = f.submit 'Save and Mark Paid'
+  - else
+    = f.submit 'Save'

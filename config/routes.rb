@@ -23,7 +23,7 @@ EffectiveProducts::Engine.routes.draw do
       post :mark_as_issued, on: :member
     end
 
-    resources :stamps, only: [:index, :show] do
+    resources :stamps do
       post :mark_as_issued, on: :member
     end
   end

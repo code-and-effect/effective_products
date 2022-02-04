@@ -1,0 +1,11 @@
+= f.text_field :name
+= f.text_field :name_confirmation, hint: 'must match name'
+
+%h2 Stamp Information
+
+%p Please select a stamp and enter a shipping address.
+
+= f.select :category, Effective::Stamp::CATEGORIES
+
+= f.show_if :category, 'Physical' do
+  = effective_address_fields(f, :shipping)

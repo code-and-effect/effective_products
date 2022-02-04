@@ -86,7 +86,7 @@ module EffectiveProductsStampWizard
     end
 
     def after_submit_purchased!
-      # Nothing to do yet
+      stamps.each { |stamp| stamp.submit! }
     end
 
   end

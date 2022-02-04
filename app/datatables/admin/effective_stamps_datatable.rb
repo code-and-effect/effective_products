@@ -16,8 +16,9 @@ module Admin
       col :created_at, as: :date
       col :owner, search: :string
 
-      col(:first_name) { |stamp| stamp.owner.first_name }
-      col(:last_name) { |stamp| stamp.owner.last_name }
+      col :applicant, visible: false
+      col :stamp_wizard, visible: false
+
       col(:email) { |stamp| stamp.owner.email }
       col(:phone) { |stamp| stamp.owner.phone }
 
@@ -25,11 +26,19 @@ module Admin
         stamp.owner.try(:membership).try(:number)
       end
 
-      col :category
       col :name
-      col :name_confirmation
+      col :name_confirmation, visible: false
+
+      col :category, visible: false
 
       col :shipping_address, label: 'Address'
+
+      col :purchased_order, visible: false
+      col :price, visible: false
+      col :tax_exempt, visible: false
+      col :qb_item_name, visible: false
+
+      col :status, visible: false
 
       col :issued_at
 
