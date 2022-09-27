@@ -93,7 +93,7 @@ module EffectiveProductsStampWizard
 
   # Instance Methods
   def to_s
-    'stamp payment'
+    'stamp request'
   end
 
   def in_progress?
