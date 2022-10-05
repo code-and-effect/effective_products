@@ -86,7 +86,7 @@ module Effective
     # Called by an application when submitted
     # Called by a stamp wizard when submitted
     def submit!
-      raise('expected a purchased order') unless purchased?
+      raise('expected a purchased order') unless (purchased? || applicant&.submit_order&.purchased?)
       submitted!
     end
 
