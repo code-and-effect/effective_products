@@ -49,10 +49,10 @@ module Effective
     scope :deep, -> { includes(:owner) }
 
     scope :with_approved_applicants, -> { where(applicant_id: EffectiveMemberships.Applicant.approved) }
-    scope :with_stamp_wizards, -> { where(applicant_id: nil).where.not(stamp_wizard_id: nil) }
+    scope :with_stamp_wizards, -> { purchased.where(applicant_id: nil).where.not(stamp_wizard_id: nil) }
 
     scope :ready_to_issue, -> {
-      with_approved_applicants.or(with_stamp_wizards).purchased.where.not(status: :issued)
+      with_approved_applicants.or(with_stamp_wizards).where.not(status: :issued)
     }
 
     validates :category, presence: true, inclusion: { in: CATEGORIES }
