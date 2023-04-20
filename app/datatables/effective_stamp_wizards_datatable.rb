@@ -10,7 +10,7 @@ class EffectiveStampWizardsDatatable < Effective::Datatable
       resource.submitted_at&.strftime('%F') || 'Incomplete'
     end
 
-    col :owner, visible: false, search: :ststamp
+    col :owner, visible: false, search: :string
     col :status, visible: false
     col :orders, action: :show
 

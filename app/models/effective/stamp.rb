@@ -11,9 +11,6 @@ module Effective
       :issued     # Issued by an admin
     )
 
-    #CATEGORIES = ['Physical', 'Digital-only']
-    CATEGORIES = ['Physical']
-
     log_changes if respond_to?(:log_changes)
 
     # This stamp is charged to an owner
@@ -46,37 +43,39 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:owner) }
+    scope :deep, -> { includes(:addresses, owner: [:membership]) }
 
     scope :with_approved_applicants, -> { where(applicant_id: EffectiveMemberships.Applicant.approved) }
     scope :with_stamp_wizards, -> { purchased.where(applicant_id: nil).where.not(stamp_wizard_id: nil) }
+    scope :created_by_admin, -> { where(applicant_id: nil, stamp_wizard_id: nil) }
 
     scope :ready_to_issue, -> {
-      with_approved_applicants.or(with_stamp_wizards).where.not(status: :issued)
+      with_approved_applicants.or(with_stamp_wizards).or(created_by_admin).where.not(status: :issued)
     }
 
-    validates :category, presence: true, inclusion: { in: CATEGORIES }
     validates :name, presence: true
     validates :name_confirmation, presence: true
+    validates :category, presence: true
+    validates :shipping_address, presence: true, unless: -> { category == 'Digital-only' }
 
     validate(if: -> { name.present? && name_confirmation.present? }) do
       self.errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation
     end
 
-    validate(if: -> { physical? }) do
-      self.errors.add(:shipping_address, "can't be blank when physical stamp") unless shipping_address.present?
+    validate(if: -> { category.present? }) do
+      self.errors.add(:category, "is not included") unless EffectiveProducts.stamp_categories.include?(category)
     end
 
     def to_s
-      ['Professional Stamp', *name.presence].join(' ')
+      [model_name.human, *name.presence].join(' ')
+    end
+
+    def mark_as_submitted
+      submitted!
     end
 
     def mark_as_issued!
       issued!
-    end
-
-    def physical?
-      category == 'Physical'
     end
 
     def created_by_admin?
@@ -102,7 +101,7 @@ module Effective
         qb_item_name: category.stamp_fee_qb_item_name
       )
 
-      save!
+      submitted!
       Effective::Order.new(items: self, user: owner).mark_as_purchased!
     end
 

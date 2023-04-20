@@ -20,10 +20,12 @@ EffectiveProducts::Engine.routes.draw do
     resources :ring_wizards, except: [:new, :create, :show]
 
     resources :rings, only: [:index, :show] do
+      post :mark_as_submitted, on: :member
       post :mark_as_issued, on: :member
     end
 
     resources :stamps do
+      post :mark_as_submitted, on: :member
       post :mark_as_issued, on: :member
     end
   end

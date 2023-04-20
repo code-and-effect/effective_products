@@ -88,7 +88,6 @@ module EffectiveProductsStampWizard
     def after_submit_purchased!
       stamps.each { |stamp| stamp.submit! }
     end
-
   end
 
   # Instance Methods
@@ -119,7 +118,7 @@ module EffectiveProductsStampWizard
   end
 
   def assign_pricing
-    raise('to be implemented by including class')
+    raise('assign_pricing() to be implemented by including class')
 
     # price = (stamp.physical? ? 100_00 : 50_00)
     # qb_item_name = "Professional Stamp"

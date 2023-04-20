@@ -31,7 +31,8 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:owner) }
+    scope :deep, -> { includes(:addresses, owner: [:membership]) }
+
     scope :ready_to_issue, -> { purchased.where(issued_at: nil) }
     scope :issued, -> { where.not(issued_at: nil) }
 
