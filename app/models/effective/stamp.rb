@@ -70,7 +70,7 @@ module Effective
       [model_name.human, *name.presence].join(' ')
     end
 
-    def mark_as_submitted
+    def mark_as_submitted!
       submitted!
     end
 

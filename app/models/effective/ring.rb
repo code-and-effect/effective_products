@@ -50,6 +50,10 @@ module Effective
       update!(issued_at: Time.zone.now)
     end
 
+    def submitted?
+      purchased?
+    end
+
     def issued?
       issued_at.present?
     end
