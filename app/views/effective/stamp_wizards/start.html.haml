@@ -5,7 +5,7 @@
     .card-body
       %p Welcome #{current_user}!
 
-      %p You are about to request a replacement Professional Stamp.
+      %p You are about to request a replacement #{et(Effective::Stamp)}.
 
       = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
         = f.hidden_field :id

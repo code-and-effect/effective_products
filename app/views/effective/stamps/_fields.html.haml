@@ -1,11 +1,15 @@
+- f.object.shipping_address ||= (f.object.owner.try(:shipping_address) || f.object.owner.try(:billing_address))
+- f.object.name ||= f.object.owner.to_s
+
 = f.text_field :name
 = f.text_field :name_confirmation, hint: 'must match name'
 
-%h2 Stamp Information
+- collection = EffectiveProducts.stamp_categories
 
-%p Please select a stamp and enter a shipping address.
+- if collection.length == 1
+  = f.hidden_field :category, value: collection.first
+- else
+  = f.select :category, collection
 
-= f.select :category, Effective::Stamp::CATEGORIES
-
-= f.show_if :category, 'Physical' do
-  = effective_address_fields(f, :shipping)
+%h4 Shipping address
+= effective_address_fields(f, :shipping)

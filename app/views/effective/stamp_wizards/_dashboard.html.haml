@@ -1,11 +1,11 @@
 -# In progress
 - existing = EffectiveProducts.StampWizard.in_progress.for(current_user).first
-- datatable = EffectiveResources.best('EffectiveStampWizardsDatatable').new(self, namespace: :effective)
+- completed = EffectiveResources.best('EffectiveStampWizardsDatatable').new(self, namespace: :effective)
+
+%h2= ets(EffectiveProducts.StampWizard)
 
 - if existing.present?
-  %h2 In Progress Stamp Requests
-
-  %p Your request for Professional Stamp is incomplete
+  %p Your request is in progress.
 
   %p
     Please
@@ -16,14 +16,13 @@
 
   %hr
 
-%h2 Stamp Replacement Requests
-
 = yield
 
-- if datatable.present?
-  = render_simple_datatable(datatable)
+- if completed.present?
+  %p You have completed these past #{ets(EffectiveProducts.StampWizard).downcase}:
+  = render_simple_datatable(completed)
 - else
-  %p You have no past professional stamp replacement requests. When you do, we'll show them here.
+  %p You have no past #{ets(EffectiveProducts.StampWizard).downcase}. When you do, we'll show them here.
 
 - if existing.blank?
-  %p= link_to 'Start Stamp Replacement Request', effective_products.new_stamp_wizard_path, class: 'btn btn-primary'
+  %p= link_to "Start #{et(EffectiveProducts.StampWizard)}", effective_products.new_stamp_wizard_path, class: 'btn btn-primary'

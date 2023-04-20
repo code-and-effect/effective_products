@@ -1,6 +1,6 @@
-= card('Stamp Payment') do
-  - stamp = stamp_wizard.stamp
+- stamp = stamp_wizard.stamp
 
+= card(et(stamp)) do
   %table.table.table-sm
     %tbody
       - if request.path.start_with?('/admin')

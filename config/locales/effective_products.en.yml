@@ -1,0 +1,12 @@
+en:
+  effective_products:
+    name: 'Stamps and Rings'
+
+  activerecord:
+    models:
+      # Application namespace
+      app/stamp_wizard: 'Stamp Replacement Request'
+
+      # Effective namespace
+      effective/stamp: 'Professional Stamp'
+      effective/ring: 'Professional Ring'

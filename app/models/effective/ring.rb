@@ -31,7 +31,8 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:owner) }
+    scope :deep, -> { includes(:addresses, owner: [:membership]) }
+
     scope :ready_to_issue, -> { purchased.where(issued_at: nil) }
     scope :issued, -> { where.not(issued_at: nil) }
 
@@ -47,6 +48,10 @@ module Effective
 
     def mark_as_issued!
       update!(issued_at: Time.zone.now)
+    end
+
+    def submitted?
+      purchased?
     end
 
     def issued?

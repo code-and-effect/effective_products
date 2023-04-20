@@ -9,6 +9,7 @@ module EffectiveProducts
     [
       :rings_table_name, :ring_wizards_table_name, :ring_wizard_class_name,
       :stamps_table_name, :stamp_wizards_table_name, :stamp_wizard_class_name,
+      :stamp_categories,
       :layout, :use_effective_roles
     ]
   end
@@ -21,6 +22,10 @@ module EffectiveProducts
 
   def self.StampWizard
     stamp_wizard_class_name&.constantize || Effective::StampWizard
+  end
+
+  def self.stamp_categories
+    Array(config[:stamp_categories])
   end
 
 end

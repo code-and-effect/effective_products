@@ -119,7 +119,7 @@ module EffectiveProductsRingWizard
   end
 
   def assign_pricing
-    raise('to be implemented by including class')
+    raise('assign_pricing() to be implemented by including class')
 
     # raise('expected a persisted ring') unless ring&.persisted?
 
