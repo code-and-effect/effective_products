@@ -2,7 +2,7 @@
   = render 'effective/stamp_wizards/content', resource: resource
 
   - raise('expected a submitted resource') unless resource.was_submitted?
-  - raise('expected a purchased resource submit_order') unless resource.submit_order&.purchased?
+  - raise('expected a purchased resource submit_order') unless resource.submit_order&.was_purchased?
 
   .alert.alert-success.mb-4
     Successfully submitted on #{resource.submit_order.purchased_at.strftime('%F')}.
