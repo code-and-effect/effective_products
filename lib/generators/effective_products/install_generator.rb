@@ -20,9 +20,7 @@ module EffectiveMemberships
       end
 
       def create_migration_file
-        @products_table_name  = ':' + EffectiveProducts.products_table_name.to_s
-
-        migration_template ('../' * 3) + 'db/migrate/01_create_effective_products.rb.erb', 'db/migrate/create_effective_products.rb'
+        migration_template ('../' * 3) + 'db/migrate/101_create_effective_products.rb', 'db/migrate/create_effective_products.rb'
       end
 
     end

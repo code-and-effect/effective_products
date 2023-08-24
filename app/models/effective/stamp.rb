@@ -2,6 +2,8 @@
 
 module Effective
   class Stamp < ActiveRecord::Base
+    self.table_name = (EffectiveProducts.stamps_table_name || :stamps).to_s
+
     acts_as_purchasable
     acts_as_addressable :shipping
 

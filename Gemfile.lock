@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    effective_products (0.2.0)
+    effective_products (0.2.1)
       effective_bootstrap
       effective_datatables (>= 4.0.0)
       effective_orders
@@ -141,7 +141,7 @@ GEM
       effective_resources
       liquid
       rails (>= 3.2.0)
-    effective_orders (6.5.7)
+    effective_orders (6.8.0)
       coffee-rails
       effective_addresses
       effective_bootstrap

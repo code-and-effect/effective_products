@@ -2,6 +2,8 @@
 
 module Effective
   class Ring < ActiveRecord::Base
+    self.table_name = (EffectiveProducts.rings_table_name || :rings).to_s
+
     SIZES = [3, 4, 5, 6, 7, 8]
     TITANIUM_SIZES = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     METALS = ['14k Yellow Gold', 'Sterling Silver', 'Titanium']
