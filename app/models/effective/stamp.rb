@@ -7,6 +7,8 @@ module Effective
     acts_as_purchasable
     acts_as_addressable :shipping
 
+    attr_accessor :admin_action
+
     acts_as_statused(
       :draft,     # Built in an application
       :submitted, # Submitted by an applicant or stamp wizard
@@ -45,15 +47,24 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:addresses, owner: [:membership]) }
+    scope :deep, -> { includes(:addresses, :purchased_order, owner: [:membership], applicant: [:category, :user], stamp_wizard: [:user]) }
+    scope :not_issued, -> { where.not(status: :issued) }
 
     scope :with_approved_applicants, -> { where(applicant_id: EffectiveMemberships.Applicant.approved) }
-    scope :with_stamp_wizards, -> { purchased.where(applicant_id: nil).where.not(stamp_wizard_id: nil) }
-    scope :created_by_admin, -> { where(applicant_id: nil, stamp_wizard_id: nil) }
+    scope :with_unapproved_applicants, -> { where.not(applicant_id: nil).where.not(applicant_id: EffectiveMemberships.Applicant.approved) }
 
+    scope :with_purchased_stamp_wizards, -> { purchased.where.not(stamp_wizard_id: nil) }
+    scope :with_not_purchased_stamp_wizards, -> { not_purchased.where.not(stamp_wizard_id: nil) }
+
+    scope :created_by_admin, -> { submitted.where(applicant_id: nil, stamp_wizard_id: nil) }
+
+    # Datatable Scopes
     scope :ready_to_issue, -> {
-      with_approved_applicants.or(with_stamp_wizards).or(created_by_admin).where.not(status: :issued)
+      with_approved_applicants.or(with_purchased_stamp_wizards).or(created_by_admin).submitted
     }
+
+    scope :pending_applicant_approval, -> { not_issued.with_unapproved_applicants }
+    scope :pending_stamp_request_purchase, -> { not_issued.with_not_purchased_stamp_wizards }
 
     validates :name, presence: true
     validates :name_confirmation, presence: true
@@ -66,6 +77,10 @@ module Effective
 
     validate(if: -> { category.present? }) do
       self.errors.add(:category, "is not included") unless EffectiveProducts.stamp_categories.include?(category)
+    end
+
+    validate(if: -> { admin_action }) do
+      self.errors.add(:owner_id, "must have a membership") unless owner && owner.try(:membership).present?
     end
 
     def to_s
@@ -93,6 +108,7 @@ module Effective
 
     # This is the Admin Save and Mark Paid action
     def mark_paid!
+      update!(admin_action: true) # Make sure we have an owner with a membership
       raise('expected an user with a membership category') unless owner && owner.try(:membership).present?
 
       category = owner.membership.categories.first

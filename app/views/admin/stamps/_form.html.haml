@@ -1,21 +1,8 @@
-= effective_form_with(model: [:admin, stamp], engine: true) do |f|
-  - if inline_datatable?
-    = f.hidden_field :owner_id
-    = f.hidden_field :owner_type
+= tabs do
+  = tab(stamp) do
+    = render 'admin/stamps/form_stamp', stamp: stamp
 
-  - else
-    - ajax_url = (@select2_ajax_path || effective_resources.users_admin_select2_ajax_index_path) unless Rails.env.test?
-    - f.object.owner_type ||= current_user.class.name
+  - if stamp.persisted?
+    = tab 'Logs' do
+      = render_inline_datatable(stamp.logs_datatable)
 
-    = f.select :owner_id, current_user.class.all, label: 'User', ajax_url: ajax_url,
-      'data-load-ajax-url': effective_products.new_admin_stamp_path,
-      'data-load-ajax-div': '#effective-stamps-ajax'
-
-  #effective-stamps-ajax
-    = render 'effective/stamps/fields', f: f, stamp: f.object
-
-    = f.submit do
-      = f.save 'Save'
-
-      - if f.object.new_record?
-        = f.save 'Save and Mark Paid'

@@ -92,7 +92,7 @@ module EffectiveProductsStampWizard
 
   # Instance Methods
   def to_s
-    'stamp request'
+    persisted? ? "#{model_name.human} ##{id}" : model_name.human
   end
 
   def in_progress?
