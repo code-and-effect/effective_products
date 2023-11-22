@@ -31,8 +31,8 @@ module Admin
         end
       end
 
-      col(:email) { |stamp| mail_to stamp.owner.email }
-      col(:phone) { |stamp| stamp.owner.phone }
+      col(:email, visible: false) { |stamp| mail_to stamp.owner.email }
+      col(:phone, visible: false) { |stamp| stamp.owner.phone }
 
       col :member_number, label: 'Member #' do |stamp|
         stamp.owner.try(:membership).try(:number)
@@ -51,7 +51,7 @@ module Admin
       col(:postal_code, visible: false, label: 'Postal') { |stamp| stamp.shipping_address.try(:postal_code) }
       col(:country_code, visible: false, label: 'Country') { |stamp| stamp.shipping_address.try(:country_code) }
 
-      col :purchased_order, search: :string
+      col :purchased_order, search: :string, visible: false
       col :price, as: :price, visible: false
       col :tax_exempt, visible: false
       col :qb_item_name, visible: false
