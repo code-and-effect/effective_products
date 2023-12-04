@@ -9,7 +9,7 @@ module EffectiveProducts
 
     # Include acts_as_addressable concern and allow any ActiveRecord object to call it
     initializer 'effective_products.active_record' do |app|
-      ActiveSupport.on_load :active_record do
+      app.config.to_prepare do
         ActiveRecord::Base.extend(EffectiveProductsRingWizard::Base)
         ActiveRecord::Base.extend(EffectiveProductsStampWizard::Base)
       end
