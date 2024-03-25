@@ -84,7 +84,7 @@ module Effective
     end
 
     def to_s
-      [model_name.human, *name.presence].join(' ')
+      [model_name.human, *name.presence, ("- #{category}" if category.present?)].join(' ')
     end
 
     def mark_as_submitted!
