@@ -20,7 +20,7 @@ class EffectiveStampWizardsDatatable < Effective::Datatable
 
     actions_col(actions: []) do |resource|
       if resource.draft?
-        dropdown_link_to('Continue', effective_products.stamp_wizard_build_path(resource, reource.next_step), 'data-turbolinks' => false)
+        dropdown_link_to('Continue', effective_products.stamp_wizard_build_path(resource, resource.next_step), 'data-turbolinks' => false)
         dropdown_link_to('Delete', effective_products.stamp_wizard_path(resource), 'data-confirm': "Really delete #{resource}?", 'data-method': :delete)
       else
         dropdown_link_to('Show', effective_products.stamp_wizard_path(resource))
@@ -30,7 +30,7 @@ class EffectiveStampWizardsDatatable < Effective::Datatable
   end
 
   collection do
-    EffectiveProducts.StampWizard.deep.done.where(owner: current_user)
+    EffectiveProducts.StampWizard.deep.where(owner: current_user)
   end
 
 end

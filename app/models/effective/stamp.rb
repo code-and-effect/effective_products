@@ -84,7 +84,13 @@ module Effective
     end
 
     def to_s
-      [model_name.human, *name.presence, ("- #{category}" if category.present?)].join(' ')
+      [
+        model_name.human, 
+        ('Replacement' if stamp_wizard_id_was.present?), 
+        '-',
+        name.presence, 
+        ("- #{category}" if category.present?)
+      ].compact.join(' ')
     end
 
     def mark_as_submitted!

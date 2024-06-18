@@ -5,6 +5,7 @@ module Admin
       scope :pending_applicant_approval
       scope :pending_stamp_request_purchase
       scope :issued
+      scope :draft
       scope :all
     end
 

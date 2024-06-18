@@ -92,7 +92,7 @@ module EffectiveProductsStampWizard
 
   # Instance Methods
   def to_s
-    persisted? ? "#{model_name.human} ##{id}" : model_name.human
+    (persisted? || destroyed?) ? "#{model_name.human} ##{id_was}" : model_name.human
   end
 
   def in_progress?
