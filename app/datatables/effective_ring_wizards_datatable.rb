@@ -15,7 +15,7 @@ class EffectiveRingWizardsDatatable < Effective::Datatable
     col :orders, action: :show
 
     col(:issued_at, label: 'Issued on') do |resource|
-      resource.ring.issued_at&.strftime('%F') || '-'
+      resource.ring&.issued_at&.strftime('%F') || '-'
     end
 
     actions_col(actions: []) do |resource|
