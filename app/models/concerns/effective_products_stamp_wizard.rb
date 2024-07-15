@@ -134,6 +134,10 @@ module EffectiveProductsStampWizard
     save!
   end
 
+  def stamp_categories
+    EffectiveProducts.stamp_categories
+  end
+
   private
 
   def present_stamps

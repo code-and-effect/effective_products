@@ -4,7 +4,7 @@
 = f.text_field :name
 = f.text_field :name_confirmation, hint: 'must match name'
 
-- collection = EffectiveProducts.stamp_categories
+- collection = local_assigns[:parent].try(:stamp_categories) || EffectiveProducts.stamp_categories
 
 - if collection.length == 1
   = f.hidden_field :category, value: collection.first
