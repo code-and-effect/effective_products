@@ -72,15 +72,15 @@ module Effective
     validates :shipping_address, presence: true, unless: -> { category == 'Digital-only' }
 
     validate(if: -> { name.present? && name_confirmation.present? }) do
-      self.errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation
+      errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation
     end
 
     validate(if: -> { category.present? }) do
-      self.errors.add(:category, "is not included") unless EffectiveProducts.stamp_categories.include?(category)
+      errors.add(:category, "is not included") unless EffectiveProducts.stamp_categories.include?(category)
     end
 
     validate(if: -> { admin_action }) do
-      self.errors.add(:owner_id, "must have a membership") unless owner && owner.try(:membership).present?
+      errors.add(:owner_id, "must have a membership") unless owner && owner.try(:membership).present?
     end
 
     def to_s
@@ -114,19 +114,25 @@ module Effective
 
     # This is the Admin Save and Mark Paid action
     def mark_paid!
-      update!(admin_action: true) # Make sure we have an owner with a membership
-      raise('expected an user with a membership category') unless owner && owner.try(:membership).present?
+      assign_attributes(admin_action: true)
 
-      category = owner.membership.categories.first
+      category = owner&.membership&.categories&.first
 
-      assign_attributes(
-        price: category.stamp_fee,
-        tax_exempt: category.stamp_fee_tax_exempt,
-        qb_item_name: category.stamp_fee_qb_item_name
-      )
+      if category.present?
+        assign_attributes(
+          price: category.stamp_fee,
+          tax_exempt: category.stamp_fee_tax_exempt,
+          qb_item_name: category.stamp_fee_qb_item_name
+        )
+      end
 
-      submitted!
-      Effective::Order.new(items: self, user: owner).mark_as_purchased!
+      submitted! # Will fail with invalid owner membership anyway
+
+      if category.present?
+        Effective::Order.new(items: self, user: owner).mark_as_purchased!
+      end
+
+      true
     end
 
   end

@@ -5,11 +5,7 @@
 = f.text_field :name_confirmation, hint: 'must match name'
 
 - collection = local_assigns[:parent].try(:stamp_categories) || EffectiveProducts.stamp_categories
-
-- if collection.length == 1
-  = f.hidden_field :category, value: collection.first
-- else
-  = f.select :category, collection
+= f.select :category, collection
 
 %h4 Shipping address
 = effective_address_fields(f, :shipping)
