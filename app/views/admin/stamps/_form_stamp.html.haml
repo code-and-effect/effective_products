@@ -4,7 +4,7 @@
     = f.hidden_field :owner_type
 
   - else
-    - ajax_url = (@select2_ajax_path || effective_resources.users_admin_select2_ajax_index_path) unless Rails.env.test?
+    - ajax_url = (effective_resources.users_effective_ajax_index_path unless Rails.env.test?)
     - f.object.owner_type ||= current_user.class.name
 
     = f.hidden_field :owner_type
