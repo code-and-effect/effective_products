@@ -75,10 +75,6 @@ module Effective
       errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation
     end
 
-    validate(if: -> { category.present? }) do
-      errors.add(:category, "is not included") unless EffectiveProducts.stamp_categories.include?(category)
-    end
-
     validate(if: -> { admin_action }) do
       errors.add(:owner_id, "must have a membership") unless owner && owner.try(:membership).present?
     end
