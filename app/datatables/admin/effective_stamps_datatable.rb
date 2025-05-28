@@ -10,11 +10,15 @@ module Admin
     end
 
     datatable do
-      order :created_at
+      order :purchased_at
 
       col :updated_at, visible: false
       col :created_at, visible: false
       col :id, visible: false
+
+      col :purchased_at, as: :date do |stamp|
+        stamp.purchased_order.try(:purchased_at).try(:strftime, '%F')
+      end
 
       col :created_at, as: :date
       col :status, visible: false
