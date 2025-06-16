@@ -2,10 +2,8 @@ module Admin
   class EffectiveStampsDatatable < Effective::Datatable
     filters do
       scope :ready_to_issue
-      scope :pending_applicant_approval
-      scope :pending_stamp_request_purchase
+      scope :pending
       scope :issued
-      scope :draft
       scope :all
     end
 

@@ -63,6 +63,7 @@ module Effective
       with_approved_applicants.or(with_purchased_stamp_wizards).or(created_by_admin).submitted
     }
 
+    scope :pending, -> { pending_applicant_approval.or(pending_stamp_request_purchase) }
     scope :pending_applicant_approval, -> { not_issued.with_unapproved_applicants }
     scope :pending_stamp_request_purchase, -> { not_issued.with_not_purchased_stamp_wizards }
 
