@@ -50,8 +50,8 @@ module Effective
     scope :deep, -> { includes(:addresses, :purchased_order, owner: [:membership], applicant: [:category, :user], stamp_wizard: [:user]) }
     scope :not_issued, -> { where.not(status: :issued) }
 
-    scope :with_approved_applicants, -> { where(applicant_id: EffectiveMemberships.Applicant.approved) }
-    scope :with_unapproved_applicants, -> { where.not(applicant_id: nil).where.not(applicant_id: EffectiveMemberships.Applicant.approved) }
+    scope :with_registered_applicants, -> { where(applicant_id: EffectiveMemberships.Applicant.registered) }
+    scope :with_unregistered_applicants, -> { where.not(applicant_id: nil).where.not(applicant_id: EffectiveMemberships.Applicant.registered) }
 
     scope :with_purchased_stamp_wizards, -> { purchased.where.not(stamp_wizard_id: nil) }
     scope :with_not_purchased_stamp_wizards, -> { not_purchased.where.not(stamp_wizard_id: nil) }
@@ -60,11 +60,11 @@ module Effective
 
     # Datatable Scopes
     scope :ready_to_issue, -> {
-      with_approved_applicants.or(with_purchased_stamp_wizards).or(created_by_admin).submitted
+      with_registered_applicants.or(with_purchased_stamp_wizards).or(created_by_admin).submitted
     }
 
-    scope :pending, -> { pending_applicant_approval.or(pending_stamp_request_purchase) }
-    scope :pending_applicant_approval, -> { not_issued.with_unapproved_applicants }
+    scope :pending, -> { pending_applicant_registration.or(pending_stamp_request_purchase) }
+    scope :pending_applicant_registration, -> { not_issued.with_unregistered_applicants }
     scope :pending_stamp_request_purchase, -> { not_issued.with_not_purchased_stamp_wizards }
 
     validates :name, presence: true
