@@ -11,14 +11,18 @@ module Admin
       order :purchased_at
 
       col :updated_at, visible: false
-      col :created_at, visible: false
       col :id, visible: false
 
-      col :purchased_at, as: :date do |stamp|
+      col :registered_at, as: :date do |stamp|
+        stamp.applicant.try(:registered_at).try(:strftime, '%F')
+      end
+
+      col :purchased_at, as: :date, visible: false do |stamp|
         stamp.purchased_order.try(:purchased_at).try(:strftime, '%F')
       end
 
-      col :created_at, as: :date
+      col :created_at, as: :date, visible: false
+      col :created_by
       col :status, visible: false
       col :owner, search: :string
 
