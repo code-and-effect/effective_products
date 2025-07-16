@@ -7,5 +7,4 @@
 - collection = local_assigns[:parent].try(:stamp_categories) || EffectiveProducts.stamp_categories
 = f.select :category, collection
 
-%h4 Shipping address
 = effective_address_fields(f, :shipping)
