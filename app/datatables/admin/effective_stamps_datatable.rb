@@ -58,6 +58,18 @@ module Admin
       col(:postal_code, visible: false, label: 'Postal') { |stamp| stamp.shipping_address.try(:postal_code) }
       col(:country_code, visible: false, label: 'Country') { |stamp| stamp.shipping_address.try(:country_code) }
 
+      if current_user.respond_to?(:billing_address)
+        col :user_billing_address, visible: false do |stamp|
+          stamp.owner.try(:billing_address).try(:to_html)
+        end
+      end
+
+      if current_user.respond_to?(:shipping_address)
+        col :user_shipping_address, visible: false do |stamp|
+          stamp.owner.try(:shipping_address).try(:to_html)
+        end
+      end
+
       col :purchased_order, search: :string, visible: false
       col :price, as: :price, visible: false
       col :tax_exempt, visible: false
