@@ -50,24 +50,17 @@ module Admin
 
       col :category, search: EffectiveProducts.stamp_categories
 
-      col :shipping_address
-      col(:address1, visible: false) { |stamp| stamp.shipping_address.try(:address1) }
-      col(:address2, visible: false) { |stamp| stamp.shipping_address.try(:address2) }
-      col(:city, visible: false) { |stamp| stamp.shipping_address.try(:city) }
-      col(:state_code, visible: false, label: 'Prov') { |stamp| stamp.shipping_address.try(:state_code) }
-      col(:postal_code, visible: false, label: 'Postal') { |stamp| stamp.shipping_address.try(:postal_code) }
-      col(:country_code, visible: false, label: 'Country') { |stamp| stamp.shipping_address.try(:country_code) }
-
-      if current_user.respond_to?(:billing_address)
-        col :user_billing_address, visible: false do |stamp|
-          stamp.owner.try(:billing_address).try(:to_html)
-        end
-      end
-
       if current_user.respond_to?(:shipping_address)
-        col :user_shipping_address, visible: false do |stamp|
+        col :user_shipping_address, label: "Shipping Address" do |stamp|
           stamp.owner.try(:shipping_address).try(:to_html)
         end
+
+        col(:address1, visible: false) { |stamp| stamp&.owner.shipping_address.try(:address1) }
+        col(:address2, visible: false) { |stamp| stamp&.owner.shipping_address.try(:address2) }
+        col(:city, visible: false) { |stamp| stamp&.owner.shipping_address.try(:city) }
+        col(:state_code, visible: false, label: 'Prov') { |stamp| stamp&.owner.shipping_address.try(:state_code) }
+        col(:postal_code, visible: false, label: 'Postal') { |stamp| stamp&.owner.shipping_address.try(:postal_code) }
+        col(:country_code, visible: false, label: 'Country') { |stamp| stamp&.owner.shipping_address.try(:country_code) }
       end
 
       col :purchased_order, search: :string, visible: false
