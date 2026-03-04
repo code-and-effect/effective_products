@@ -1,4 +1,4 @@
-class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
+class CreateEffectiveOrders < ActiveRecord::Migration[6.0]
   def change
     create_table :orders do |t|
       t.integer   :user_id
@@ -10,14 +10,21 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
       t.integer   :parent_id
       t.string    :parent_type
 
-      t.string    :state
+      t.string    :status
+      t.text      :status_steps
+
       t.datetime  :purchased_at
+
+      t.integer   :purchased_by_id
+      t.string    :purchased_by_type
 
       t.text      :note
       t.text      :note_to_buyer
       t.text      :note_internal
 
       t.string    :billing_name
+      t.string    :billing_first_name
+      t.string    :billing_last_name
       t.string    :email
       t.string    :cc
 
@@ -25,17 +32,27 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
       t.string    :payment_provider
       t.string    :payment_card
 
-      t.decimal   :tax_rate, precision: 6, scale: 3
+      t.decimal   :tax_rate, :precision => 6, :scale => 3
+      t.decimal   :surcharge_percent, :precision => 6, :scale => 3
 
       t.integer   :subtotal
       t.integer   :tax
+      t.integer   :amount_owing
+      t.integer   :surcharge
+      t.integer   :surcharge_tax
       t.integer   :total
+
+      t.boolean   :delayed_payment, default: false
+      t.date      :delayed_payment_date
+      t.text      :delayed_payment_intent
+      t.integer   :delayed_payment_total
+      t.datetime  :delayed_payment_purchase_ran_at
+      t.text      :delayed_payment_purchase_result
 
       t.timestamps
     end
 
     add_index :orders, :user_id
-
 
     create_table :order_items do |t|
       t.integer   :order_id
@@ -44,7 +61,7 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
 
       t.string    :name
       t.integer   :quantity
-      t.integer   :price, default: 0
+      t.integer   :price
       t.boolean   :tax_exempt
 
       t.timestamps
@@ -54,12 +71,11 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
     add_index :order_items, :purchasable_id
     add_index :order_items, [:purchasable_type, :purchasable_id]
 
-
     create_table :carts do |t|
       t.integer   :user_id
       t.string    :user_type
 
-      t.integer   :cart_items_count, default: 0
+      t.integer   :cart_items_count, :default => 0
       t.timestamps
     end
 
@@ -89,12 +105,22 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
       t.string    :active_card
       t.string    :status
 
-      t.integer   :subscriptions_count, default: 0
+      t.integer   :subscriptions_count, :default => 0
 
       t.timestamps
     end
 
     add_index :customers, :user_id
+
+    create_table :item_names do |t|
+      t.string :name
+      t.boolean :archived, default: false
+
+      t.datetime :updated_at
+      t.datetime :created_at
+    end
+
+    add_index :item_names, [:name, :archived]
 
     create_table :subscriptions do |t|
       t.integer   :customer_id
@@ -123,7 +149,7 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
 
       t.string    :name
       t.integer   :price
-      t.boolean   :tax_exempt, default: false
+      t.boolean   :tax_exempt, :default => false
 
       t.string    :qb_item_name
 
@@ -131,5 +157,4 @@ class CreateEffectiveOrders < ActiveRecord::Migration[5.0]
     end
 
   end
-
 end
