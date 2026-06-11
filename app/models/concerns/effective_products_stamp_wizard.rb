@@ -47,9 +47,6 @@ module EffectiveProductsStampWizard
     has_many :stamps, -> { order(:id) }, class_name: 'Effective::Stamp', inverse_of: :stamp_wizard, dependent: :destroy
     accepts_nested_attributes_for :stamps, reject_if: :all_blank, allow_destroy: true
 
-    has_many :orders, -> { order(:id) }, as: :parent, class_name: 'Effective::Order', dependent: :nullify
-    accepts_nested_attributes_for :orders
-
     effective_resource do
       # Acts as Statused
       status                 :string, permitted: false

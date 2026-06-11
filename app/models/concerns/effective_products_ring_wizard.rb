@@ -47,9 +47,6 @@ module EffectiveProductsRingWizard
     has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', inverse_of: :ring_wizard, dependent: :destroy
     accepts_nested_attributes_for :rings, reject_if: :all_blank, allow_destroy: true
 
-    has_many :orders, -> { order(:id) }, as: :parent, class_name: 'Effective::Order', dependent: :nullify
-    accepts_nested_attributes_for :orders
-
     effective_resource do
       # Acts as Statused
       status                 :string, permitted: false
