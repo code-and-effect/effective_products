@@ -7,8 +7,6 @@ module Effective
     acts_as_purchasable
     acts_as_addressable :shipping
 
-    attr_accessor :admin_action
-
     acts_as_statused(
       :draft,     # Built in an application
       :submitted, # Submitted by an applicant or stamp wizard
@@ -20,11 +18,8 @@ module Effective
     # This stamp is charged to an owner
     belongs_to :owner, polymorphic: true
 
-    # Sometimes a stamp is built through an applicant
-    belongs_to :applicant, polymorphic: true, optional: true
-
-    # Other times through the stamp_wizard
-    belongs_to :stamp_wizard, polymorphic: true, optional: true
+    # This could be a StampWizard, an Applicant, a FeePayment, or Blank (admin created)
+    belongs_to :parent, polymorphic: true, optional: true
 
     effective_resource do
       name               :string
@@ -32,8 +27,10 @@ module Effective
 
       category           :string
 
-      # Admin issues stamps
+      submitted_at       :datetime
       issued_at          :datetime   # Present when issued by an admin
+
+      created_by_admin   :boolean
 
       # Acts as Statused
       status            :string
@@ -47,89 +44,51 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:addresses, :purchased_order, owner: [:membership], applicant: [:category, :user], stamp_wizard: [:user]) }
+    scope :deep, -> { includes(:addresses, :purchased_order, :parent, owner: [:membership]) }
+
+    scope :ready_to_issue, -> { submitted }
     scope :not_issued, -> { where.not(status: :issued) }
 
-    scope :with_registered_applicants, -> { where(applicant_id: EffectiveMemberships.Applicant.registered) }
-    scope :with_unregistered_applicants, -> { where.not(applicant_id: nil).where.not(applicant_id: EffectiveMemberships.Applicant.registered) }
-
-    scope :with_purchased_stamp_wizards, -> { purchased.where.not(stamp_wizard_id: nil) }
-    scope :with_not_purchased_stamp_wizards, -> { not_purchased.where.not(stamp_wizard_id: nil) }
-
-    scope :created_by_admin, -> { submitted.where(applicant_id: nil, stamp_wizard_id: nil) }
-
-    # Datatable Scopes
-    scope :ready_to_issue, -> {
-      with_registered_applicants.or(with_purchased_stamp_wizards).or(created_by_admin).submitted
-    }
-
-    scope :pending, -> { pending_applicant_registration.or(pending_stamp_request_purchase) }
-    scope :pending_applicant_registration, -> { not_issued.with_unregistered_applicants }
-    scope :pending_stamp_request_purchase, -> { not_issued.with_not_purchased_stamp_wizards }
+    scope :created_by_admin, -> { where(created_by_admin: true) }
 
     validates :name, presence: true
     validates :name_confirmation, presence: true
     validates :category, presence: true
     validates :shipping_address, presence: true, unless: -> { category == 'Digital-only' }
 
+    validates :parent, presence: true, unless: -> { created_by_admin? }
+
     validate(if: -> { name.present? && name_confirmation.present? }) do
       errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation
     end
 
-    validate(if: -> { admin_action }) do
-      errors.add(:owner_id, "must have a membership") unless owner && owner.try(:membership).present?
-    end
-
     def to_s
       [
-        model_name.human, 
-        ('Replacement' if stamp_wizard_id_was.present?), 
+        model_name.human,
+        ('Replacement' if parent_stamp_wizard?),
         '-',
-        name.presence, 
+        name.presence,
         ("- #{category}" if category.present?)
       ].compact.join(' ')
     end
 
+    def parent_stamp_wizard?
+      parent_type.to_s.include?('StampWizard')
+    end
+
+    # Called by a stamp wizard, applicant or fee payment when submitted
+    def submit!
+      submitted!
+    end
+
+    # Admin action
     def mark_as_submitted!
       submitted!
     end
 
+    # Admin action
     def mark_as_issued!
       issued!
-    end
-
-    def created_by_admin?
-      stamp_wizard_id.blank? && applicant_id.blank?
-    end
-
-    # Called by an application when submitted
-    # Called by a stamp wizard when submitted
-    def submit!
-      raise('expected a purchased order') unless (purchased? || applicant&.submit_order&.purchased?)
-      submitted!
-    end
-
-    # This is the Admin Save and Mark Paid action
-    def mark_paid!
-      assign_attributes(admin_action: true)
-
-      category = owner&.membership&.categories&.first
-
-      if category.present?
-        assign_attributes(
-          price: category.stamp_fee,
-          tax_exempt: category.stamp_fee_tax_exempt,
-          qb_item_name: category.stamp_fee_qb_item_name
-        )
-      end
-
-      submitted! # Will fail with invalid owner membership anyway
-
-      if category.present?
-        Effective::Order.new(items: self, user: owner).mark_as_purchased!
-      end
-
-      true
     end
 
   end

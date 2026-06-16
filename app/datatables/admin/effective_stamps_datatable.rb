@@ -1,44 +1,47 @@
 module Admin
   class EffectiveStampsDatatable < Effective::Datatable
     filters do
-      scope :ready_to_issue
-      scope :pending
-      scope :issued
       scope :all
+      scope :submitted, label: 'Submitted / Ready to Issue'
+      scope :issued
+      scope :draft
     end
 
     datatable do
       order :purchased_at
 
       col :updated_at, visible: false
+      col :created_at, as: :date, visible: false
       col :id, visible: false
 
-      col :registered_at, as: :date do |stamp|
-        stamp.applicant.try(:registered_at).try(:strftime, '%F')
-      end
+      col :status
+
+      # col :registered_at, as: :date do |stamp|
+      #   stamp.applicant.try(:registered_at).try(:strftime, '%F')
+      # end
 
       col :purchased_at, as: :date, visible: false do |stamp|
         stamp.purchased_order.try(:purchased_at).try(:strftime, '%F')
       end
 
-      col :created_at, as: :date, visible: false
-      col :created_by
-      col :status, visible: false
+      col :created_by, visible: false
       col :owner, search: :string
 
-      col(:applicant, search: :string) do |stamp|
-        if stamp.applicant.present?
-          link_to(stamp.applicant, effective_memberships.edit_admin_applicant_path(stamp.applicant)) + ' ' + badges(stamp.applicant.status)
-        end
-      end
+      col :parent
 
-      col(:stamp_wizard, search: :string) do |stamp|
-        if stamp.stamp_wizard.present?
-          stamp.stamp_wizard.to_s + ' ' + badges(stamp.stamp_wizard.status)
-        end
-      end
+      # col(:applicant, search: :string) do |stamp|
+      #   if stamp.applicant.present?
+      #     link_to(stamp.applicant, effective_memberships.edit_admin_applicant_path(stamp.applicant)) + ' ' + badges(stamp.applicant.status)
+      #   end
+      # end
 
-      col(:email, visible: false) { |stamp| mail_to stamp.owner.email }
+      # col(:stamp_wizard, search: :string) do |stamp|
+      #   if stamp.stamp_wizard.present?
+      #     stamp.stamp_wizard.to_s + ' ' + badges(stamp.stamp_wizard.status)
+      #   end
+      # end
+
+      col(:email, visible: false) { |stamp| mail_to(stamp.owner.email) }
       col(:phone, visible: false) { |stamp| stamp.owner.phone }
 
       col :member_number, label: 'Member #' do |stamp|

@@ -44,7 +44,7 @@ module EffectiveProductsStampWizard
     accepts_nested_attributes_for :owner
 
     # Effective Namespace
-    has_many :stamps, -> { order(:id) }, class_name: 'Effective::Stamp', inverse_of: :stamp_wizard, dependent: :destroy
+    has_many :stamps, -> { order(:id) }, class_name: 'Effective::Stamp', inverse_of: :parent, dependent: :nullify
     accepts_nested_attributes_for :stamps, reject_if: :all_blank, allow_destroy: true
 
     effective_resource do
@@ -69,12 +69,16 @@ module EffectiveProductsStampWizard
 
     scope :for, -> (user) { where(owner: user) }
 
+    before_validation(if: -> { current_step == :stamp && stamp.present? }) do
+      assign_pricing unless stamp.purchased?
+    end
+
     # All Steps validations
     validates :owner, presence: true
 
     # Stamp Step
     validate(if: -> { current_step == :stamp }) do
-      self.errors.add(:stamps, "can't be blank") unless present_stamps.present?
+      errors.add(:stamps, "can't be blank") unless present_stamps.present?
     end
 
     # All Fees and Orders
@@ -92,6 +96,10 @@ module EffectiveProductsStampWizard
     (persisted? || destroyed?) ? "#{model_name.human} ##{id_was}" : model_name.human
   end
 
+  def stamp_categories
+    EffectiveProducts.stamp_categories
+  end
+
   def in_progress?
     draft?
   end
@@ -105,13 +113,11 @@ module EffectiveProductsStampWizard
   end
 
   def build_stamp
-    stamp = stamps.build(owner: owner)
-
-    if (address = owner.try(:shipping_address) || owner.try(:billing_address)).present?
-      stamp.shipping_address = address
-    end
-
-    stamp
+    stamps.build(
+      owner: owner,
+      name: owner.to_s.presence,
+      shipping_address: (owner.try(:shipping_address) || owner.try(:billing_address)),
+    )
   end
 
   def assign_pricing
@@ -122,17 +128,6 @@ module EffectiveProductsStampWizard
     # tax_exempt = false
 
     # stamp.assign_attributes(price: price, qb_item_name: qb_item_name, tax_exempt: tax_exempt)
-  end
-
-  # After the configure Stamp step
-  def stamp!
-    assign_pricing() if stamp.present?
-    raise('expected stamp to have a price') if stamp.price.blank?
-    save!
-  end
-
-  def stamp_categories
-    EffectiveProducts.stamp_categories
   end
 
   private

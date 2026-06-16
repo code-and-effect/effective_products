@@ -44,7 +44,7 @@ module EffectiveProductsRingWizard
     accepts_nested_attributes_for :owner
 
     # Effective Namespace
-    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', inverse_of: :ring_wizard, dependent: :destroy
+    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', inverse_of: :parent, dependent: :nullify
     accepts_nested_attributes_for :rings, reject_if: :all_blank, allow_destroy: true
 
     effective_resource do
@@ -74,7 +74,7 @@ module EffectiveProductsRingWizard
 
     # Ring Step
     validate(if: -> { current_step == :ring }) do
-      self.errors.add(:rings, "can't be blank") unless present_rings.present?
+      errors.add(:rings, "can't be blank") unless present_rings.present?
     end
 
     # All Fees and Orders
@@ -83,7 +83,7 @@ module EffectiveProductsRingWizard
     end
 
     def after_submit_purchased!
-      # Nothing to do yet
+      rings.each { |ring| ring.submit! }
     end
 
   end

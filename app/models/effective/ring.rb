@@ -11,19 +11,32 @@ module Effective
     acts_as_purchasable
     acts_as_addressable :shipping
 
+    acts_as_statused(
+      :draft,     # Built in an application
+      :submitted, # Submitted by a ring wizard
+      :issued     # Issued by an admin
+    )
+
     log_changes if respond_to?(:log_changes)
 
     # This ring is charged to an owner
     belongs_to :owner, polymorphic: true
 
-    # Through the ring_wizard
-    belongs_to :ring_wizard, polymorphic: true, optional: true
+    # This could be a RingWizard, or Blank (admin created)
+    belongs_to :parent, polymorphic: true, optional: true
 
     effective_resource do
       size               :integer
       metal              :string
 
+      submitted_at       :datetime
       issued_at          :datetime   # Present when issued by an admin
+
+      created_by_admin   :boolean
+
+      # Acts as Statused
+      status            :string
+      status_steps      :text
 
       # Acts as Purchasable
       price             :integer
@@ -33,10 +46,12 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:addresses, owner: [:membership]) }
+    scope :deep, -> { includes(:addresses, :purchased_order, :parent, owner: [:membership]) }
 
-    scope :ready_to_issue, -> { purchased.where(issued_at: nil) }
-    scope :issued, -> { where.not(issued_at: nil) }
+    scope :ready_to_issue, -> { submitted }
+    scope :not_issued, -> { where.not(status: :issued) }
+
+    scope :created_by_admin, -> { where(created_by_admin: true) }
 
     validates :metal, presence: true, inclusion: { in: METALS }
 
@@ -44,20 +59,33 @@ module Effective
     validates :size, inclusion: { in: TITANIUM_SIZES }, if: -> { metal == 'Titanium' }
     validates :size, inclusion: { in: SIZES }, if: -> { metal != 'Titanium' }
 
+    validates :parent, presence: true, unless: -> { created_by_admin? }
+
     def to_s
-      ["Chemist's Ring", (" - #{metal} size #{size}" if metal.present? && size.present?)].compact.join
+      [
+        model_name.human,
+        ('Replacement' if parent_ring_wizard?),
+        ("- #{metal} size #{size}" if metal.present? && size.present?)
+      ].compact.join(' ')
     end
 
+    def parent_ring_wizard?
+      parent if parent_type.to_s.include?('RingWizard')
+    end
+
+    # Called by a ring wizard when submitted
+    def submit!
+      submitted!
+    end
+
+    # Admin action
+    def mark_as_submitted!
+      submitted!
+    end
+
+    # Admin action
     def mark_as_issued!
-      update!(issued_at: Time.zone.now)
-    end
-
-    def submitted?
-      purchased?
-    end
-
-    def issued?
-      issued_at.present?
+      issued!
     end
 
   end
