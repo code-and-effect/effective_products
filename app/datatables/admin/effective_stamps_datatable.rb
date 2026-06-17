@@ -1,14 +1,13 @@
 module Admin
   class EffectiveStampsDatatable < Effective::Datatable
     filters do
-      scope :all
-      scope :submitted, label: 'Submitted / Ready to Issue'
+      scope :submitted
       scope :issued
-      scope :draft
+      scope :all
     end
 
     datatable do
-      order :purchased_at
+      order :updated_at
 
       col :updated_at, visible: false
       col :created_at, as: :date, visible: false
@@ -16,30 +15,8 @@ module Admin
 
       col :status
 
-      # col :registered_at, as: :date do |stamp|
-      #   stamp.applicant.try(:registered_at).try(:strftime, '%F')
-      # end
-
-      col :purchased_at, as: :date, visible: false do |stamp|
-        stamp.purchased_order.try(:purchased_at).try(:strftime, '%F')
-      end
-
-      col :created_by, visible: false
       col :owner, search: :string
-
       col :parent
-
-      # col(:applicant, search: :string) do |stamp|
-      #   if stamp.applicant.present?
-      #     link_to(stamp.applicant, effective_memberships.edit_admin_applicant_path(stamp.applicant)) + ' ' + badges(stamp.applicant.status)
-      #   end
-      # end
-
-      # col(:stamp_wizard, search: :string) do |stamp|
-      #   if stamp.stamp_wizard.present?
-      #     stamp.stamp_wizard.to_s + ' ' + badges(stamp.stamp_wizard.status)
-      #   end
-      # end
 
       col(:email, visible: false) { |stamp| mail_to(stamp.owner.email) }
       col(:phone, visible: false) { |stamp| stamp.owner.phone }
@@ -71,6 +48,8 @@ module Admin
       col :tax_exempt, visible: false
       col :qb_item_name, visible: false
 
+      col :purchased_at, as: :date, visible: false
+      col :submitted_at, as: :date, visible: false
       col :issued_at, as: :date
 
       actions_col

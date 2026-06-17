@@ -53,13 +53,12 @@ module Effective
 
     scope :created_by_admin, -> { where(created_by_admin: true) }
 
-    validates :metal, presence: true, inclusion: { in: METALS }
+    validates :parent, presence: true, unless: -> { created_by_admin? }
 
+    validates :metal, presence: true, inclusion: { in: METALS }
     validates :size, presence: true
     validates :size, inclusion: { in: TITANIUM_SIZES }, if: -> { metal == 'Titanium' }
     validates :size, inclusion: { in: SIZES }, if: -> { metal != 'Titanium' }
-
-    validates :parent, presence: true, unless: -> { created_by_admin? }
 
     def to_s
       [

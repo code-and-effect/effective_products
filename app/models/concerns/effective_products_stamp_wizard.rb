@@ -44,7 +44,7 @@ module EffectiveProductsStampWizard
     accepts_nested_attributes_for :owner
 
     # Effective Namespace
-    has_many :stamps, -> { order(:id) }, class_name: 'Effective::Stamp', as: :parent, inverse_of: :parent, dependent: :destroy
+    has_many :stamps, -> { order(:id) }, class_name: 'Effective::Stamp', as: :parent, dependent: :destroy
     accepts_nested_attributes_for :stamps, reject_if: :all_blank, allow_destroy: true
 
     effective_resource do

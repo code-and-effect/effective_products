@@ -61,12 +61,12 @@ module Effective
       )
     end
 
+    validates :parent, presence: true, unless: -> { created_by_admin? }
+
     validates :name, presence: true
     validates :name_confirmation, presence: true
     validates :category, presence: true
     validates :shipping_address, presence: true, unless: -> { category == 'Digital-only' }
-
-    validates :parent, presence: true, unless: -> { created_by_admin? }
 
     validate(if: -> { name.present? && name_confirmation.present? }) do
       errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation

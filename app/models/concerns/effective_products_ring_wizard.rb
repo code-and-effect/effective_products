@@ -44,7 +44,7 @@ module EffectiveProductsRingWizard
     accepts_nested_attributes_for :owner
 
     # Effective Namespace
-    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', as: :parent, inverse_of: :parent, dependent: :destroy
+    has_many :rings, -> { order(:id) }, class_name: 'Effective::Ring', as: :parent, dependent: :destroy
     accepts_nested_attributes_for :rings, reject_if: :all_blank, allow_destroy: true
 
     effective_resource do
@@ -90,7 +90,7 @@ module EffectiveProductsRingWizard
 
   # Instance Methods
   def to_s
-    'ring payment'
+    (persisted? || destroyed?) ? "#{model_name.human} ##{id_was}" : model_name.human
   end
 
   def in_progress?
