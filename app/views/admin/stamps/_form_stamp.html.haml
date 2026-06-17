@@ -2,9 +2,8 @@
   - if inline_datatable?
     = f.hidden_field :owner_id
     = f.hidden_field :owner_type
-
   - else
-    - ajax_url = (effective_resources.users_effective_ajax_index_path unless Rails.env.test?)
+    - ajax_url = (effective_resources.users_effective_ajax_index_path(scope: :members) unless Rails.env.test?)
     - f.object.owner_type ||= current_user.class.name
 
     = f.hidden_field :owner_type
@@ -13,11 +12,11 @@
       'data-load-ajax-url': effective_products.new_admin_stamp_path,
       'data-load-ajax-div': '#effective-stamps-ajax'
 
+  - if f.object.new_record?
+    = f.hidden_field :created_by_admin, value: true
+
   #effective-stamps-ajax
     = render 'effective/stamps/fields', f: f, stamp: f.object
 
-    = f.submit do
-      - if f.object.new_record?
-        = f.save 'Save and Mark Paid'
-      - else
-        = f.save 'Save'
+    - # This marks it as submitted for an admin
+    = f.submit 'Save'

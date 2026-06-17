@@ -4,10 +4,6 @@
 = f.hidden_field :owner_id
 = f.hidden_field :owner_type
 
-= f.hidden_field :price
-= f.hidden_field :tax_exempt
-= f.hidden_field :qb_item_name
-
 - f.object.shipping_address ||= (f.object.owner.try(:shipping_address) || f.object.owner.try(:billing_address))
 - f.object.name ||= f.object.owner.to_s
 

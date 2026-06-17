@@ -51,6 +51,16 @@ module Effective
 
     scope :created_by_admin, -> { where(created_by_admin: true) }
 
+    before_validation(if: -> { created_by_admin? && owner.present? }) do
+      category = owner.membership&.category
+
+      assign_attributes(
+        price: (category&.stamp_fee || 0),
+        tax_exempt: (category&.stamp_fee_tax_exempt || false),
+        qb_item_name: (category&.stamp_fee_qb_item_name || 'Professional Stamp')
+      )
+    end
+
     validates :name, presence: true
     validates :name_confirmation, presence: true
     validates :category, presence: true
