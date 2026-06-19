@@ -5,7 +5,6 @@ module Effective
     self.table_name = (EffectiveProducts.stamps_table_name || :stamps).to_s
 
     acts_as_purchasable
-    acts_as_addressable :shipping
 
     acts_as_statused(
       :draft,     # Built in an application
@@ -17,6 +16,7 @@ module Effective
 
     # This stamp is charged to an owner
     belongs_to :owner, polymorphic: true
+    accepts_nested_attributes_for :owner, reject_if: :all_blank
 
     # This could be a StampWizard, an Applicant, a FeePayment, or Blank (admin created)
     belongs_to :parent, polymorphic: true, optional: true
@@ -45,41 +45,26 @@ module Effective
     end
 
     scope :deep, -> { includes(:addresses, :purchased_order, :parent, owner: [:membership]) }
-
     scope :ready_to_issue, -> { submitted }
     scope :not_issued, -> { where.not(status: :issued) }
-
     scope :created_by_admin, -> { where(created_by_admin: true) }
-
-    before_validation(if: -> { created_by_admin? && owner.present? }) do
-      category = owner.membership&.category
-
-      assign_attributes(
-        price: (category&.stamp_fee || 0),
-        tax_exempt: (category&.stamp_fee_tax_exempt || false),
-        qb_item_name: (category&.stamp_fee_qb_item_name || 'Professional Stamp')
-      )
-    end
 
     validates :parent, presence: true, unless: -> { created_by_admin? }
 
     validates :name, presence: true
     validates :name_confirmation, presence: true
     validates :category, presence: true
-    validates :shipping_address, presence: true, unless: -> { category == 'Digital-only' }
 
     validate(if: -> { name.present? && name_confirmation.present? }) do
       errors.add(:name_confirmation, "doesn't match name") unless name == name_confirmation
     end
 
+    validate(if: -> { owner.present? }, unless: -> { category == 'Digital-only' }) do
+      errors.add(:owner, "must have a shipping address") unless owner.try(:shipping_address).present?
+    end
+
     def to_s
-      [
-        model_name.human,
-        ('Replacement' if parent_stamp_wizard?),
-        '-',
-        name.presence,
-        ("- #{category}" if category.present?)
-      ].compact.join(' ')
+      [model_name.human, name.presence, category.presence].compact.join(' - ')
     end
 
     def parent_stamp_wizard?
@@ -101,5 +86,21 @@ module Effective
       issued!
     end
 
+    # This is the Admin Save and Mark Paid action
+    def mark_paid!
+      category = owner&.membership&.category
+
+      assign_attributes(
+        price: (category&.stamp_fee || 0),
+        tax_exempt: (category&.stamp_fee_tax_exempt || false),
+        qb_item_name: (category&.stamp_fee_qb_item_name || 'Professional Stamp')
+      )
+
+      submit!
+
+      Effective::Order.new(items: self, user: owner).mark_as_purchased!
+
+      true
+    end
   end
 end

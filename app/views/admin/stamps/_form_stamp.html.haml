@@ -1,12 +1,11 @@
 = effective_form_with(model: [:admin, stamp], engine: true) do |f|
+  - f.object.owner_type ||= current_user.class.name
+  = f.hidden_field :owner_type
+
   - if inline_datatable?
     = f.hidden_field :owner_id
-    = f.hidden_field :owner_type
   - else
     - ajax_url = (effective_resources.users_effective_ajax_index_path(scope: :members) unless Rails.env.test?)
-    - f.object.owner_type ||= current_user.class.name
-
-    = f.hidden_field :owner_type
 
     = f.select :owner_id, current_user.class.all, label: 'User', ajax_url: ajax_url,
       'data-load-ajax-url': effective_products.new_admin_stamp_path,
@@ -18,5 +17,7 @@
   #effective-stamps-ajax
     = render 'effective/stamps/fields', f: f, stamp: f.object
 
-    - # This marks it as submitted for an admin
-    = f.submit 'Save'
+    - if f.object.new_record?
+      = f.submit 'Save and Mark Paid'
+    - else
+      = effective_submit(f)

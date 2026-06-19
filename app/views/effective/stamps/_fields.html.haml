@@ -4,7 +4,6 @@
 = f.hidden_field :owner_id
 = f.hidden_field :owner_type
 
-- f.object.shipping_address ||= (f.object.owner.try(:shipping_address) || f.object.owner.try(:billing_address))
 - f.object.name ||= f.object.owner.to_s
 
 = f.text_field :name
@@ -13,4 +12,6 @@
 - collection = local_assigns[:parent].try(:stamp_categories) || EffectiveProducts.stamp_categories
 = f.select :category, collection
 
-= effective_address_fields(f, :shipping)
+- if f.object.owner.present?
+  = f.fields_for(:owner) do |fu|
+    = effective_address_fields(fu, :shipping, skip_same_as_billing: true)

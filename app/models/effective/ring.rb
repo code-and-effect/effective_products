@@ -9,7 +9,6 @@ module Effective
     METALS = ['14k Yellow Gold', 'Sterling Silver', 'Titanium']
 
     acts_as_purchasable
-    acts_as_addressable :shipping
 
     acts_as_statused(
       :draft,     # Built in an application
@@ -47,10 +46,8 @@ module Effective
     end
 
     scope :deep, -> { includes(:addresses, :purchased_order, :parent, owner: [:membership]) }
-
     scope :ready_to_issue, -> { submitted }
     scope :not_issued, -> { where.not(status: :issued) }
-
     scope :created_by_admin, -> { where(created_by_admin: true) }
 
     validates :parent, presence: true, unless: -> { created_by_admin? }
@@ -63,13 +60,9 @@ module Effective
     def to_s
       [
         model_name.human,
-        ('Replacement' if parent_ring_wizard?),
-        ("- #{metal} size #{size}" if metal.present? && size.present?)
-      ].compact.join(' ')
-    end
-
-    def parent_ring_wizard?
-      parent if parent_type.to_s.include?('RingWizard')
+        name.presence,
+        ("#{metal} size #{size}" if metal.present? && size.present?)
+      ].compact.join(' - ')
     end
 
     # Called by a ring wizard when submitted
