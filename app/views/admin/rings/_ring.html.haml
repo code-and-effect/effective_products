@@ -1,48 +1,17 @@
-%table.table
-  %tbody
-    %tr
-      %th Owner
-      %td
-        - url = (edit_polymorphic_path(ring.owner) rescue "/admin/users/#{ring.owner.to_param}/edit")
-        = link_to(ring.owner, url)
+= effective_table_with(ring) do |f|
+  = f.content_for :owner, label: 'User' do
+    - owner = f.object.owner
 
-    %tr
-      %th Purchased Order
-      %td
-        - if ring.purchased_order.present?
-          = link_to(ring.purchased_order, effective_orders.admin_order_path(ring.purchased_order))
+    = owner.to_s
 
-    %tr
-      %th Contact
-      %td
-        - owner = ring.owner
+    - if owner.try(:email).present?
+      %br
+      = mail_to(owner.email)
 
-        = owner.to_s
+    - if owner.try(:phone).present?
+      %br
+      = owner.phone
 
-        - if owner.try(:email).present?
-          %br
-          = mail_to(owner.email)
-
-        - if owner.try(:phone).present?
-          %br
-          = owner.phone
-
-        - if owner.try(:membership).try(:number).present?
-          %br
-          Member Number #{owner.membership.number}
-
-    %tr
-      %th Address
-      %td= ring.shipping_address.to_html
-
-    %tr
-      %th Size
-      %td= ring.size
-
-    %tr
-      %th Metal
-      %td= ring.metal
-
-    %tr
-      %th Issued At
-      %td= ring.issued_at&.strftime('%F') || 'Not Issued'
+    - if owner.try(:membership).try(:number).present?
+      %br
+      Member Number #{owner.membership.number}

@@ -12,10 +12,10 @@
       %th Category
       %td= stamp.category
 
-    - if stamp.owner&.shipping_address.present?
+    - if stamp.owner.try(:shipping_address).present?
       %tr
         %th Shipping Address
-        %td= stamp.owner&.shipping_address.to_html
+        %td= stamp.owner.shipping_address.to_html
 
     - if stamp.was_submitted?
       %tr

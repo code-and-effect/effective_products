@@ -1,18 +1,12 @@
 = render 'layout' do
   = render 'effective/ring_wizards/content', resource: resource
 
-  .card
-    .card-body
-      = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
-        = f.hidden_field :id
+  = card do
+    .mb-2= render('ring_requirements', ring_wizard: resource)
 
-        = f.fields_for :rings, (f.object.ring || f.object.build_ring) do |fr|
-          = fr.hidden_field :ring_wizard_id
-          = fr.hidden_field :ring_wizard_type
+    = effective_form_with(model: resource, url: wizard_path(step), method: :put) do |f|
+      = f.hidden_field :id
 
-          = fr.hidden_field :owner_id
-          = fr.hidden_field :owner_type
+      = render('effective/ring_wizards/ring_fields', f: f)
 
-          = render('effective/ring_wizards/ring_fields', f: fr)
-
-        = f.save 'Save and Continue'
+      = f.save 'Save and Continue'
