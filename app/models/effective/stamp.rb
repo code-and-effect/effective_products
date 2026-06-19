@@ -44,7 +44,7 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:addresses, :purchased_order, :parent, owner: [:membership]) }
+    scope :deep, -> { includes(:purchased_order, :parent, owner: [:addresses, :membership]) }
     scope :ready_to_issue, -> { submitted }
     scope :not_issued, -> { where.not(status: :issued) }
     scope :created_by_admin, -> { where(created_by_admin: true) }
@@ -65,10 +65,6 @@ module Effective
 
     def to_s
       [model_name.human, name.presence, category.presence].compact.join(' - ')
-    end
-
-    def parent_stamp_wizard?
-      parent_type.to_s.include?('StampWizard')
     end
 
     # Called by a stamp wizard, applicant or fee payment when submitted

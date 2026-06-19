@@ -20,6 +20,7 @@ module Effective
 
     # This ring is charged to an owner
     belongs_to :owner, polymorphic: true
+    accepts_nested_attributes_for :owner, reject_if: :all_blank
 
     # This could be a RingWizard, or Blank (admin created)
     belongs_to :parent, polymorphic: true, optional: true
@@ -45,7 +46,7 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:addresses, :purchased_order, :parent, owner: [:membership]) }
+    scope :deep, -> { includes(:purchased_order, :parent, owner: [:addresses, :membership]) }
     scope :ready_to_issue, -> { submitted }
     scope :not_issued, -> { where.not(status: :issued) }
     scope :created_by_admin, -> { where(created_by_admin: true) }
@@ -57,10 +58,13 @@ module Effective
     validates :size, inclusion: { in: TITANIUM_SIZES }, if: -> { metal == 'Titanium' }
     validates :size, inclusion: { in: SIZES }, if: -> { metal != 'Titanium' }
 
+    validate(if: -> { owner.present? }) do
+      errors.add(:owner, "must have a shipping address") unless owner.try(:shipping_address).present?
+    end
+
     def to_s
       [
         model_name.human,
-        name.presence,
         ("#{metal} size #{size}" if metal.present? && size.present?)
       ].compact.join(' - ')
     end

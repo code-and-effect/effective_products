@@ -113,11 +113,7 @@ module EffectiveProductsStampWizard
   end
 
   def build_stamp
-    stamps.build(
-      owner: owner,
-      name: owner.to_s.presence,
-      shipping_address: (owner.try(:shipping_address) || owner.try(:billing_address)),
-    )
+    stamps.build(owner: owner, name: owner.to_s.presence)
   end
 
   def assign_pricing

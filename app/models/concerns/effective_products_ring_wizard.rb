@@ -106,13 +106,7 @@ module EffectiveProductsRingWizard
   end
 
   def build_ring
-    ring = rings.build(owner: owner)
-
-    if (address = owner.try(:shipping_address) || owner.try(:billing_address)).present?
-      ring.shipping_address = address
-    end
-
-    ring
+    rings.build(owner: owner)
   end
 
   def assign_pricing
