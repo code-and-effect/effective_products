@@ -9,21 +9,34 @@ module Effective
     METALS = ['14k Yellow Gold', 'Sterling Silver', 'Titanium']
 
     acts_as_purchasable
-    acts_as_addressable :shipping
+
+    acts_as_statused(
+      :draft,     # Built in an application
+      :submitted, # Submitted by a ring wizard
+      :issued     # Issued by an admin
+    )
 
     log_changes if respond_to?(:log_changes)
 
     # This ring is charged to an owner
     belongs_to :owner, polymorphic: true
+    accepts_nested_attributes_for :owner, reject_if: :all_blank
 
-    # Through the ring_wizard
-    belongs_to :ring_wizard, polymorphic: true, optional: true
+    # This could be a RingWizard, or Blank (admin created)
+    belongs_to :parent, polymorphic: true, optional: true
 
     effective_resource do
       size               :integer
       metal              :string
 
+      submitted_at       :datetime
       issued_at          :datetime   # Present when issued by an admin
+
+      created_by_admin   :boolean
+
+      # Acts as Statused
+      status            :string
+      status_steps      :text
 
       # Acts as Purchasable
       price             :integer
@@ -33,31 +46,42 @@ module Effective
       timestamps
     end
 
-    scope :deep, -> { includes(:addresses, owner: [:membership]) }
+    scope :deep, -> { includes(:purchased_order, :parent, owner: [:addresses, :membership]) }
+    scope :ready_to_issue, -> { submitted }
+    scope :not_issued, -> { where.not(status: :issued) }
+    scope :created_by_admin, -> { where(created_by_admin: true) }
 
-    scope :ready_to_issue, -> { purchased.where(issued_at: nil) }
-    scope :issued, -> { where.not(issued_at: nil) }
+    validates :parent, presence: true, unless: -> { created_by_admin? }
 
     validates :metal, presence: true, inclusion: { in: METALS }
-
     validates :size, presence: true
     validates :size, inclusion: { in: TITANIUM_SIZES }, if: -> { metal == 'Titanium' }
     validates :size, inclusion: { in: SIZES }, if: -> { metal != 'Titanium' }
 
+    validate(if: -> { owner.present? }) do
+      errors.add(:owner, "must have a shipping address") unless owner.try(:shipping_address).present?
+    end
+
     def to_s
-      ["Chemist's Ring", (" - #{metal} size #{size}" if metal.present? && size.present?)].compact.join
+      [
+        model_name.human,
+        ("#{metal} size #{size}" if metal.present? && size.present?)
+      ].compact.join(' - ')
     end
 
+    # Called by a ring wizard when submitted
+    def submit!
+      submitted!
+    end
+
+    # Admin action
+    def mark_as_submitted!
+      submitted!
+    end
+
+    # Admin action
     def mark_as_issued!
-      update!(issued_at: Time.zone.now)
-    end
-
-    def submitted?
-      purchased?
-    end
-
-    def issued?
-      issued_at.present?
+      issued!
     end
 
   end

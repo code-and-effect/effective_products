@@ -5,5 +5,6 @@ module Admin
 
     include Effective::CrudController
 
+    submit :mark_paid, 'Save and Mark Paid', redirect: :index
   end
 end

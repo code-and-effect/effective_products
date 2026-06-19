@@ -1,0 +1,2 @@
+= f.fields_for(:stamps, f.object.stamp || f.object.build_stamp) do |fs|
+  = render 'effective/stamps/fields', f: fs, parent: resource

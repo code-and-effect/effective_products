@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    effective_products (0.3.17)
+    effective_products (0.3.19)
       effective_bootstrap
       effective_datatables (>= 4.0.0)
       effective_orders
@@ -407,7 +407,6 @@ DEPENDENCIES
   effective_test_bot
   haml-rails
   pry-byebug
-  psych
   sqlite3
 
 RUBY VERSION

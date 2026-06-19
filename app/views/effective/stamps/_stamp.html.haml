@@ -1,0 +1,27 @@
+%table.table.table-sm.table-striped.table-hover
+  %tbody
+    %tr
+      %th Name
+      %td= stamp.name
+
+    %tr
+      %th Name Confirmation
+      %td= stamp.name_confirmation
+
+    %tr
+      %th Category
+      %td= stamp.category
+
+    - if stamp.owner.try(:shipping_address).present?
+      %tr
+        %th Shipping Address
+        %td= stamp.owner.shipping_address.to_html
+
+    - if stamp.was_submitted?
+      %tr
+        %th Submitted
+        %td= stamp.submitted_at&.strftime('%F') || '-'
+
+      %tr
+        %th Issued
+        %td= stamp.issued_at&.strftime('%F') || 'Not Issued'

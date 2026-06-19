@@ -197,8 +197,6 @@ ActiveRecord::Schema[8.1].define(version: 101) do
     t.datetime "submitted_at", precision: nil
     t.string "token"
     t.datetime "updated_at", precision: nil
-    t.integer "user_id"
-    t.string "user_type"
     t.text "wizard_steps"
     t.index ["owner_id", "owner_type"], name: "index_ring_wizards_on_owner_id_and_owner_type"
     t.index ["status"], name: "index_ring_wizards_on_status"
@@ -207,18 +205,24 @@ ActiveRecord::Schema[8.1].define(version: 101) do
 
   create_table "rings", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.boolean "created_by_admin", default: false
     t.datetime "issued_at", precision: nil
     t.string "metal"
     t.integer "owner_id"
     t.string "owner_type"
+    t.integer "parent_id"
+    t.string "parent_type"
     t.integer "price"
     t.integer "purchased_order_id"
     t.string "qb_item_name"
-    t.integer "ring_wizard_id"
-    t.string "ring_wizard_type"
     t.integer "size"
+    t.string "status"
+    t.text "status_steps"
+    t.datetime "submitted_at", precision: nil
     t.boolean "tax_exempt", default: false
     t.datetime "updated_at", null: false
+    t.index ["owner_id", "owner_type"], name: "index_rings_on_owner_id_and_owner_type"
+    t.index ["parent_id", "parent_type"], name: "index_rings_on_parent_id_and_parent_type"
   end
 
   create_table "stamp_wizards", force: :cascade do |t|
@@ -230,8 +234,6 @@ ActiveRecord::Schema[8.1].define(version: 101) do
     t.datetime "submitted_at", precision: nil
     t.string "token"
     t.datetime "updated_at", precision: nil
-    t.integer "user_id"
-    t.string "user_type"
     t.text "wizard_steps"
     t.index ["owner_id", "owner_type"], name: "index_stamp_wizards_on_owner_id_and_owner_type"
     t.index ["status"], name: "index_stamp_wizards_on_status"
@@ -239,24 +241,26 @@ ActiveRecord::Schema[8.1].define(version: 101) do
   end
 
   create_table "stamps", force: :cascade do |t|
-    t.integer "applicant_id"
-    t.string "applicant_type"
     t.string "category"
     t.datetime "created_at", null: false
+    t.boolean "created_by_admin", default: false
     t.datetime "issued_at", precision: nil
     t.string "name"
     t.string "name_confirmation"
     t.integer "owner_id"
     t.string "owner_type"
+    t.integer "parent_id"
+    t.string "parent_type"
     t.integer "price"
     t.integer "purchased_order_id"
     t.string "qb_item_name"
-    t.integer "stamp_wizard_id"
-    t.string "stamp_wizard_type"
     t.string "status"
     t.text "status_steps"
+    t.datetime "submitted_at", precision: nil
     t.boolean "tax_exempt", default: false
     t.datetime "updated_at", null: false
+    t.index ["owner_id", "owner_type"], name: "index_stamps_on_owner_id_and_owner_type"
+    t.index ["parent_id", "parent_type"], name: "index_stamps_on_parent_id_and_parent_type"
   end
 
   create_table "subscriptions", force: :cascade do |t|
