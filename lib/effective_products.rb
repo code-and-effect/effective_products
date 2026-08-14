@@ -17,11 +17,11 @@ module EffectiveProducts
   include EffectiveGem
 
   def self.RingWizard
-    ring_wizard_class_name&.constantize || Effective::RingWizard
+    klass(:ring_wizard)
   end
 
   def self.StampWizard
-    stamp_wizard_class_name&.constantize || Effective::StampWizard
+    klass(:stamp_wizard)
   end
 
   def self.stamp_categories
