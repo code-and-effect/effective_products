@@ -67,6 +67,38 @@ module Effective
       [model_name.human, name.presence, category.presence].compact.join(' - ')
     end
 
+    def applicant_status
+      applicant_statuses.to_sentence.presence
+    end
+
+    def applicant_category
+      applicant_categories.to_sentence.presence
+    end
+
+    def applicant_categories
+      linked_applicants
+        .filter_map { |applicant| applicant.try(:category) }
+        .map(&:to_s)
+        .uniq
+    end
+
+    def applicant_statuses
+      linked_applicants
+        .filter_map { |applicant| applicant.try(:status).presence }
+        .map { |status| status.to_s.humanize }
+        .uniq
+    end
+
+    def linked_applicants
+      if parent.class.try(:effective_memberships_applicant?)
+        [parent]
+      elsif parent.respond_to?(:registration_applicants)
+        Array(parent.registration_applicants)
+      else
+        []
+      end
+    end
+
     # Called by a stamp wizard, applicant or fee payment when submitted
     def submit!
       submitted!
