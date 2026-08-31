@@ -1,17 +1,22 @@
 = effective_table_with(stamp) do |f|
-  = f.content_for :owner, label: 'User' do
-    - owner = f.object.owner
+  = f.belongs_to :owner, label: 'User'
+  = render 'effective/stamps/fields', f: f, stamp: f.object
 
-    = owner.to_s
-
-    - if owner.try(:email).present?
-      %br
-      = mail_to(owner.email)
-
-    - if owner.try(:phone).present?
-      %br
-      = owner.phone
-
-    - if owner.try(:membership).try(:number).present?
-      %br
-      Member Number #{owner.membership.number}
+  = f.text_field :status
+  = f.datetime_field :submitted_at
+  = f.datetime_field :purchased_at
+  = f.datetime_field :issued_at
+  = f.belongs_to :parent
+  = f.text_field :applicant_status, label: 'Applicant Status'
+  = f.email_field :email, value: (f.object.owner.try(:email).presence || '-')
+  = f.text_field :phone, value: (f.object.owner.try(:phone).presence || '-')
+  = f.text_field :member_number, label: 'Member #', value: (f.object.owner.try(:membership).try(:number).presence || '-')
+  = f.text_field :current_category, label: 'Current Category', value: (f.object.owner.try(:membership).try(:categories).to_a.to_sentence.presence || '-')
+  = f.text_field :applicant_category, label: 'Applicant Category', value: (f.object.applicant_category || '-')
+  = f.belongs_to :purchased_order
+  = f.price_field :price
+  = f.boolean_row :tax_exempt
+  = f.text_field :qb_item_name
+  = f.datetime_field :created, label: 'Created at', value: (f.object.created_at || '-')
+  = f.datetime_field :updated, label: 'Updated at', value: (f.object.updated_at || '-')
+  = f.text_field :id
